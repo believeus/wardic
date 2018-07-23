@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" 
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd 
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd 
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.0.xsd ">
+	<context:property-placeholder location="classpath*:/jobs.properties"
+		ignore-resource-not-found="true" ignore-unresolvable="true" />
+	
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+			<property name="securityManager" ref="securityManager" />
+			<property name="loginUrl" value="/admin/loginView.jhtml" /> 
+			<property name="successUrl" value="/admin/login.jhtml" />
+			<property name="unauthorizedUrl" value="/admin/common/unauthorized.jhtml" />
+		 	<property name="filters">
+			 <map>
+				<entry key="authc" value-ref="authenticationFilter" />
+			 </map>
+			</property>
+		    <property name="filterChainDefinitions">
+			<value>
+				/admin/**=authc
+			</value>
+		</property>
+	</bean>
+	<bean id="authenticationFilter" class="cn.believeus.auth.AuthenticationFilter" />
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="cacheManager" ref="shiroCacheManager" />
+		<property name="realm" ref="myRealm" />
+		<property name="sessionManager" ref="sessionManager" />
+	</bean>
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.ServletContainerSessionManager"/>
+	<bean id="shiroCacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManager" ref="ehCacheManager" />
+	</bean>
+	<bean id="myRealm" class="cn.believeus.auth.AuthenticationRealm">
+	    <property name="authorizationCacheName" value="authorizationCached" />
+	</bean>
+	<aop:aspectj-autoproxy proxy-target-class="true" />
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+	    <property name="securityManager" ref="securityManager"/>
+	</bean>
+</beans>
