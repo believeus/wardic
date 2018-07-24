@@ -158,8 +158,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                             }); 
                             //End:将子项数据保存到服务端
                          }); 
-                          
-                         
                      }
 
                      break;
@@ -463,8 +461,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                 	 oThis.remove();
                                  });
                         	 }
-                            
-                             
                              
                              break;
                          case "itemAdd":
@@ -552,7 +548,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	    <div id="editor" style="width: 100%;height: 800px;"></div>
  	</div>
  </div>
+ <div style="position:absolute; right:15px; bottom:0px; width:100px; height:120px; border: 1px solid grey;">
+ 	<div><img src="static/images/erweima.jpg" width="100px;"></div>
+ 	<div style="font-weight: bold;font-size: 12px;text-align: center;color: #2d3e50">IT咨询加此微信</div>
+ </div>
 </div>
+
 </body>
 
 </html>
