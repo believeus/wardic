@@ -161,7 +161,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
 	 	<div>
-	 		<input id="save" type="button" style="width: 100%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;" value="向程序员疯子们致敬"/>
+	 		<input  type="button" style="width: 100%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;" value="向程序员疯子们致敬"/>
 	 		
 	 	</div>
 	 	<!-- end:save -->

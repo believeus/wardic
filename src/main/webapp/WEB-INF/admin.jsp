@@ -15,9 +15,19 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <script src="static/js/jquery-3.3.1.min.js"></script>
   <script src="static/editor/wangEditor.js"></script>
  <script>
- 
- $(function() {
 
+ $(function() {
+	 //使用ctrl+s保存文章
+	 $(document).keydown(function(e){
+		   if( e.ctrlKey  == true && e.keyCode == 83 ){
+			   var item={};
+			    item.msg=$("div[click=on]").attr("id")+"@"+editor.txt.html();
+	 			$.post("<%=basePath%>saveData.jhtml",item,function(msg){
+	 				 editor.$textElem.attr('contenteditable', false);
+	 			});
+		      return false; // 截取返回false就不会保存网页了
+		   }
+		});
 	//隐藏浏览器滚动条
 	 document.body.parentNode.style.overflowY = "hidden";
 	//创建网页编辑器
@@ -40,15 +50,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	         };
 	 editor.create();
 	 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
-	 //保存文章
-	 $("#save").click(function(){
-		    var item={};
-		    item.msg=$("div[click=on]").attr("id")+"@"+editor.txt.html();
- 			$.post("<%=basePath%>saveData.jhtml",item,function(msg){
- 				 editor.$textElem.attr('contenteditable', false);
- 			});
- 			
- 		});
+	 
      //禁用鼠标右键
      $('body').on("contextmenu", function() {
          return false;
@@ -552,7 +554,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
 	 	<div>
-	 		<input id="save" type="button" style="width: 50%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;" value="保存"/>
+	 		<input  type="button" style="width: 100%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;" value="向程序员疯子们致敬"/>
 	 	</div>
 	 	<!-- end:save -->
 	</div>

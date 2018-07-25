@@ -18,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cn.believeus.model.Tdata;
 import cn.believeus.model.Titem;
-import cn.believeus.model.Tuser;
 import cn.believeus.service.MySQLService;
 
 import com.alibaba.fastjson.JSONArray;
@@ -124,6 +123,10 @@ public class IndexController {
 		int otherId = Integer.parseInt(data.split(":")[1]);
 		Titem thisItem = (Titem) service.findObject(Titem.class, thisId);
 		Titem otherItem = (Titem) service.findObject(Titem.class, otherId);
+		String thisContent=thisItem.getDatabox().get(0).getContent();
+		String otherContent=otherItem.getDatabox().get(0).getContent();
+		thisItem.getDatabox().get(0).setContent(otherContent);
+		otherItem.getDatabox().get(0).setContent(thisContent);
 		//如果是两个临近的替换,替换文本内容即可
 		if(data.split(":").length==2){
 			String otherTitle = otherItem.getTitle();
