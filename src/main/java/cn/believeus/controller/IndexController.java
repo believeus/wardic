@@ -1,16 +1,24 @@
 package cn.believeus.controller;
 
+import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
+import mydfs.storage.server.MydfsTrackerServer;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import cn.believeus.model.Tdata;
 import cn.believeus.model.Titem;
+import cn.believeus.model.Tuser;
 import cn.believeus.service.MySQLService;
 
 import com.alibaba.fastjson.JSONArray;
@@ -19,17 +27,25 @@ import com.alibaba.fastjson.JSONArray;
 public class IndexController {
 	@Resource
 	private MySQLService service;
-
+	
+	@Resource
+	private MydfsTrackerServer mydfsTrackerServer;
+	
 	@RequestMapping("/index")
-	public ModelAndView index() {
+	public ModelAndView index(@RequestParam(required=false) String login) {
 		ModelAndView modelView = new ModelAndView();
-		modelView.setViewName("/WEB-INF/index.jsp");
+		if("believeus".equals(login)){
+			modelView.setViewName("/WEB-INF/admin.jsp");
+		}else {
+			modelView.setViewName("/WEB-INF/index.jsp");
+		}
+		
 		String hql = "from Titem  where parent is null order by oid asc ";
 		List<?> itembox = service.findObjectList(hql);
 		modelView.addObject("itembox", itembox);
 		return modelView;
 	}
-
+	
 	@RequestMapping("/findItem")
 	@ResponseBody
 	public String findItem(int id) {
@@ -50,7 +66,23 @@ public class IndexController {
 		return "<h3>请输入文章内容……</h3>";
 
 	}
-
+	
+	@RequestMapping("/upload")
+	@ResponseBody
+	public Map<String, String> upload(@RequestParam(value="myFileName")MultipartFile mf){
+		try {
+			String fileName = mf.getOriginalFilename();
+			String stuffix=fileName.substring(fileName.lastIndexOf(".")+1);
+			InputStream in = mf.getInputStream();
+			String filepath = mydfsTrackerServer.upload(in, stuffix);
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("data",filepath);//这里应该是项目路径
+			return map;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	@ResponseBody
 	@RequestMapping("/saveData")
 	public String saveData(String msg) {
