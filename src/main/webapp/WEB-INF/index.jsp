@@ -58,7 +58,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                     		 var oThis=$(this);
                     		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
                     			 var jsonData = $.parseJSON(data);
-                    			 for(var i=0;i<jsonData.length;i++){
+                    			 //因为是根据oid从小到大的顺序发送到ajax的
+                    			 //而oThis.after是每次都在oThis之后插入的
+                    			 //所以要逆过来编译sonData.length-1 到0
+                    			 //才能保证oid的正确顺序
+                    			 for(var i=jsonData.length-1;i>=0;i--){
     								var div="<div name='subChild' id='"+jsonData[i].id+"' oid='"+jsonData[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color:#f1f1f1;margin-top:5px;margin-left:20px;font-size:15px;color: rgb(153, 153, 153)' contenteditable='false'>"+jsonData[i].title+"</div>";
                     				oThis.after(div);
                     			 }
