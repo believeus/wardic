@@ -72,24 +72,18 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 		//end:如果没有子项目，发送ajax请求，如果有子项，可折叠
                 		
                 	 }
-                	 //begin:若有一个索引处于编辑状态，其他索引不得点击
-                	 var isEdit=$(this).attr("contenteditable");
-                	 if(isEdit=="true"){return;}
-                	 $(this).siblings().each(function(){
-                		 var _isEdit=$(this).attr("contenteditable");
-                		 if(_isEdit=="true"){
-                			 isEdit=_isEdit;
-                		 }
-                	 });
-                	 if(isEdit=="true"){
-                		 return;
-                	 }
-                	//end:若有一个索引处于编辑状态，其他索引不得点击
+                	 
                 	 $("#content").animate({scrollTop:0},300);
                 	 editor.$textElem.attr('contenteditable', true);
                 	 $(this).parents("div[name=category]").find("div[name=item]>div").css("background-color","").css("color","rgb(153, 153, 153)").removeAttr("click");
                 	 $(this).css("background-color","#2d3e50").attr("click","on");
                 	 $(this).css("color","white");
+                	 var id=$(this).attr("id");
+                	 var data={};
+                	 data.id=id;
+                	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+                		 editor.txt.html(msg);
+                	 });
                 	 break;
 
              }
