@@ -25,7 +25,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 var editor = new E("#menu","#editor");
 	 editor.customConfig.menus = ['head', 'bold', 'fontSize','fontName', 'underline','foreColor', 'link', 'list', 'justify', 'quote', 'table', 'video', 'code'];
 	 editor.create();
-	 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
+	
 	
      $('body').on("contextmenu", function() {
          return false;
@@ -82,6 +82,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	 var data={};
                 	 data.id=id;
                 	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+                		 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
                 		 editor.txt.html(msg);
                 	 });
                 	 break;
