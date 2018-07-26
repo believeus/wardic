@@ -111,8 +111,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <script>
  	$(function(){
  		$("#container").css("height",$(document).height());
- 		var height=($(document).height())-150-35;
- 		$("#category").css("height",height);
+ 		var height=($(document).height())-150;
+ 		$("#category").css("height",(height-35));
+ 		$("#content").css("height",height);
  	});
 </script>
  
@@ -167,7 +168,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  
  	<div id="content" style="float: left;height: 600px;width: 82%;overflow-x:hidden;">
     	<div id="menu" style="width: 100%;border:1px solid grey;" ></div>
-	    <div id="editor" style="width: 100%;height: 800px;"></div>
+	    <div id="editor" style="width: 100%;height: 800px;">
+	    	<!-- 编程攻略是一家Java培训机构，旨在培养全栈IT软件！我们认为IT培训的好坏的首要核心在于管理，以学生利益为中心 -->
+	    </div>
  	</div>
  </div>
   <div style="position:absolute; right:15px; bottom:0px; width:100px; height:120px;">
