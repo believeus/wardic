@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -25,7 +26,7 @@ public class Titem {
 	private int oid;// 排序号
 	private Titem parent;
 	private List<Titem> child = new ArrayList<Titem>();
-	private List<Tdata> databox = new ArrayList<Tdata>();
+	private Tdata databox;
 
 	public Titem() {
 		
@@ -55,19 +56,24 @@ public class Titem {
 		this.title = title;
 	}
 
-	@OneToMany(mappedBy = "item", cascade = CascadeType.ALL)
-	public List<Tdata> getDatabox() {
-		return databox;
-	}
-
-	public void setDatabox(List<Tdata> databox) {
-		this.databox = databox;
-	}
-
+	
+	
+	
+	
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 	@OrderBy("oid asc")
 	public List<Titem> getChild() {
 		return child;
+	}
+	
+	@OneToOne
+	@JoinColumn(name="id",unique=true)
+	public Tdata getDatabox() {
+		return databox;
+	}
+
+	public void setDatabox(Tdata databox) {
+		this.databox = databox;
 	}
 
 	@ManyToOne

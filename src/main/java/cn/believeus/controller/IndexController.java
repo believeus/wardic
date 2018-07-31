@@ -48,8 +48,7 @@ public class IndexController {
 	@RequestMapping("/findItem")
 	@ResponseBody
 	public String findItem(int id) {
-		String hql = "select new Titem(id,title,oid) from Titem where parent.id="
-				+ id + " order by oid asc ";
+		String hql = "select new Titem(id,title,oid) from Titem where parent.id="+ id + " order by oid asc ";
 		List<?> itembox = service.findObjectList(hql);
 		return JSONArray.toJSONString(itembox);
 	}
@@ -58,8 +57,8 @@ public class IndexController {
 	@ResponseBody
 	public String findData(int id) {
 		Titem item = (Titem) service.findObject(Titem.class, id);
-		if (!item.getDatabox().isEmpty()) {
-			Tdata tdata = item.getDatabox().get(0);
+		if (item.getDatabox()!=null) {
+			Tdata tdata = item.getDatabox();
 			return tdata.getContent();
 		}
 		return "<h3>请输入文章内容……</h3>";
@@ -89,10 +88,9 @@ public class IndexController {
 		Tdata tdata = new Tdata();
 		String itemId = msg.split("@")[0];
 		String content = msg.split("@")[1];
-		Titem item = (Titem) service.findObject(Titem.class,
-				Integer.parseInt(itemId));
-		if (!item.getDatabox().isEmpty()) {
-			tdata = item.getDatabox().get(0);
+		Titem item = (Titem) service.findObject(Titem.class,Integer.parseInt(itemId));
+		if (item.getDatabox()!=null) {
+			tdata = item.getDatabox();
 			tdata.setContent(content);
 		} else {
 			tdata.setContent(content);
@@ -123,10 +121,10 @@ public class IndexController {
 		int otherId = Integer.parseInt(data.split(":")[1]);
 		Titem thisItem = (Titem) service.findObject(Titem.class, thisId);
 		Titem otherItem = (Titem) service.findObject(Titem.class, otherId);
-		String thisContent=thisItem.getDatabox().get(0).getContent();
-		String otherContent=otherItem.getDatabox().get(0).getContent();
-		thisItem.getDatabox().get(0).setContent(otherContent);
-		otherItem.getDatabox().get(0).setContent(thisContent);
+		String thisContent=thisItem.getDatabox().getContent();
+		String otherContent=otherItem.getDatabox().getContent();
+		thisItem.getDatabox().setContent(otherContent);
+		otherItem.getDatabox().setContent(thisContent);
 		//如果是两个临近的替换,替换文本内容即可
 		if(data.split(":").length==2){
 			String otherTitle = otherItem.getTitle();
