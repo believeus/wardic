@@ -56,10 +56,9 @@ public class IndexController {
 	@RequestMapping("/findData")
 	@ResponseBody
 	public String findData(int id) {
-		Titem item = (Titem) service.findObject(Titem.class, id);
-		if (item.getDatabox()!=null) {
-			Tdata tdata = item.getDatabox();
-			return tdata.getContent();
+		Tdata data = ((Titem)service.findObject(Titem.class, id)).getDatabox();
+		if (data!=null) {
+			return data.getContent();
 		}
 		return "<h3>请输入文章内容……</h3>";
 
@@ -88,7 +87,7 @@ public class IndexController {
 		Tdata tdata = new Tdata();
 		String itemId = msg.split("@")[0];
 		String content = msg.split("@")[1];
-		Titem item = (Titem) service.findObject(Titem.class,Integer.parseInt(itemId));
+		Titem item = (Titem) service.findObject(Titem.class, Integer.parseInt(itemId));
 		if (item.getDatabox()!=null) {
 			tdata = item.getDatabox();
 			tdata.setContent(content);

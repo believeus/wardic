@@ -12,7 +12,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <meta name="description" content="编程攻略是集IT技术原创分享和经验分享的一个IT知识综合型网站" />
  <link rel="shortcut icon" href="/favicon.ico">
  <base href="<%=basePath%>">
- 
  <title>编程攻略</title>
  <script src="static/js/jquery-3.3.1.min.js"></script>
   <script src="static/editor/wangEditor.js"></script>
@@ -77,7 +76,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	 
                 	 $("#content").animate({scrollTop:0},300);
                 	 editor.$textElem.attr('contenteditable', true);
-                	 $(this).parents("div[name=category]").find("div[name=subChild]").css("color","").removeAttr("click");
+                	 $(this).parents("div[name=category]").find("div[name=item]>div").css("color","").removeAttr("click");
                 	 $(this).attr("click","on");
                 	 $(this).css("color","white");
                 	 var id=$(this).attr("id");

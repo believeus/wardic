@@ -42,8 +42,8 @@ public class MySQLService{
 		mysqlDao.delete(clazz, property, value);
 	}
 
-	public Object findObject(String hql,boolean isSQL) {
-		return mysqlDao.findObject(hql,isSQL);
+	public Object findObject(String hql) {
+		return mysqlDao.findObject(hql);
 	}
 	public void updateOrInsert(String sql){
 		mysqlDao.update(sql);

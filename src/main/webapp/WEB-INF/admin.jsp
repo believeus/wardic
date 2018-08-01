@@ -127,7 +127,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	//end:若有一个索引处于编辑状态，其他索引不得点击
                 	 $("#content").animate({scrollTop:0},300);
                 	 editor.$textElem.attr('contenteditable', true);
-                	 $(this).parents("div[name=category]").find("div[name=subChild]").css("color","").removeAttr("click");
+                	 $(this).parents("div[name=category]").find("div[name=item]>div").css("color","").removeAttr("click");
                 	 $(this).css("background-color","#2d3e50").attr("click","on");
                 	 $(this).css("color","white");
                 	 var id=$(this).attr("id");

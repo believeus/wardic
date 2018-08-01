@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -56,18 +57,13 @@ public class Titem {
 		this.title = title;
 	}
 
-	
-	
-	
-	
 	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
 	@OrderBy("oid asc")
 	public List<Titem> getChild() {
 		return child;
 	}
 	
-	@OneToOne
-	@JoinColumn(name="id",unique=true)
+	@OneToOne(mappedBy="item",fetch=FetchType.LAZY)
 	public Tdata getDatabox() {
 		return databox;
 	}
