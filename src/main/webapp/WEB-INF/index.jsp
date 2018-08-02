@@ -76,7 +76,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	 
                 	 $("#content").animate({scrollTop:0},300);
                 	 editor.$textElem.attr('contenteditable', true);
-                	 $(this).parents("div[name=category]").find("div[name=item]>div").css("color","").removeAttr("click");
+                	 $("div[name=item]>div").css("color","").removeAttr("click");
                 	 $(this).attr("click","on");
                 	 $(this).css("color","white");
                 	 var id=$(this).attr("id");
@@ -115,7 +115,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  		$("#container").css("height",$(document).height());
  		var height=($(document).height())-150;
  		$("#category").css("height",(height-35));
- 		$("#content").css("height",height);
+ 		$("#content").css("height",(height-35));
  	});
 </script>
  
@@ -137,7 +137,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <div style="width: 100%;height: auto;">
 	<div style="width: 18%;float: left;">
 		<!-- begin:menu -->
-	  	<div style="width: 100%;background-color: #2d3e50;overflow-x:hidden;height: 0px;border: 1px solid grey;" id="category" name="category">
+	  	<div style="width: 100%;background-color: #2d3e50;overflow-x:hidden;height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div name="divItem" style="height: auto;margin-top:5px;">
@@ -163,22 +163,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
 	 	<div>
-	 		<div  style="width: 100%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border: 1px solid grey;" >向程序员疯子们致敬</div>
+	 		<div  style="width: 100%;height: 35px;background-color: #2d3e50;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >向程序员疯子们致敬</div>
 	 	</div>
 	 	<!-- end:save -->
 	</div>
  
- 	<div id="content" style="float: left;height: 600px;width: 82%;overflow-x:hidden;">
-    	<div id="menu" style="width: 100%;border:1px solid grey;" ></div>
-	    <div id="editor" style="width: 100%;height: 800px;">
-	    	<!-- 编程攻略是一家Java培训机构，旨在培养全栈IT软件！我们认为IT培训的好坏的首要核心在于管理，以学生利益为中心 -->
+ 	<div style="float: left;height: auto;width: 82%;">
+ 		<div id="content" style="height: 500px;width: 100%;overflow-x:hidden;">
+	    	<div id="menu" style="width: 100%;border:1px solid grey;"></div>
+		    <div id="editor" style="width: 100%;height: 800px;">
+		    	<!-- 编程攻略是一家Java培训机构，旨在培养全栈IT软件！我们认为IT培训的好坏的首要核心在于管理，以学生利益为中心 -->
+		    </div>
 	    </div>
- 	</div>
+	    <div style="height: 35px;width: 100%;background-color: #f1f1f1;font-weight: bold;text-align: center;line-height: 35px;co">不常在线:V聊15295432682</div>
+	</div>
+ 	
  </div>
-  <div style="position:absolute; right:15px; bottom:0px; width:100px; height:120px;">
- 	<div><img src="static/images/erweima.jpg" width="100px;"></div>
- 	<div style="font-weight: bold;font-size: 12px;text-align: center;color: #2d3e50">IT咨询加此微信</div>
- </div> 
+ 
 </div>
 
 </body>
