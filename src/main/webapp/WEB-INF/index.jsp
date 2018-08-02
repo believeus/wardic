@@ -24,7 +24,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	//创建网页编辑器
 	 var E = window.wangEditor;
 	 var editor = new E("#menu","#editor");
-	 editor.customConfig.menus = ['head', 'bold', 'fontSize','fontName', 'underline','foreColor', 'link', 'list', 'justify', 'quote', 'table', 'video', 'code'];
+	 editor.customConfig.menus = [];
 	 editor.create();
 	
 	
