@@ -213,7 +213,6 @@ vhandle.onmousedown=function (e) {
             var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
             console.info($("#menubox").width());
             $("#data-content").css("width",w);
-            e.preventdefault();
     };
     document.onmouseup=function (e) {
         document.onmousemove=null;
@@ -227,7 +226,6 @@ hhandle.onmousedown=function (e) {
         box.style.height=e.clientY+"px";
         var h=$("html").height()-$("#java-editor").height()-$("#hhandle").height();
         $("#content").css("height",h);
-        e.preventdefault();
     };
     document.onmouseup=function (e) {
         document.onmousemove=null;
