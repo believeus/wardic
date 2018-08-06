@@ -38,7 +38,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 var editor = new E("#menu","#editor");
 	 editor.customConfig.menus = [];
 	 editor.create();
-	
+	 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
 	
      $('body').on("contextmenu", function() {
          return false;
@@ -130,7 +130,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  		$("#container").css("height",height);
  		$("#vhandle").css("height",height);
  		$("#category").css("height",(height-35-100));
- 		$("#content").css("height",(height-200));
  		$("#data-content").css("height",height);
  	});
  	
@@ -142,10 +141,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <div id="container" style="width: 100%;height: 100%;">
  <div style="width: 100%;height: auto;">
-	<div id="menubox" style="width: 18%;float: left;">
+	<div id="menubox" style="width: 45%;float: left;">
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;border-bottom: 1px solid grey;">编程大典</div>
 		<!-- begin:menu -->
-	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
+	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div name="divItem" style="height: auto;margin-top:5px;">
@@ -176,29 +175,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:save -->
 	</div>
  	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #1b3749;height: 10px;cursor: e-resize;"></div>
- 	<div id="data-content" style="float: left;height: auto;width: 81.5%;">
- 	 	<div id="java-editor" style="width: 100%;height: 130px;border-top: 2px solid grey;">
-	    	<div name="java-code" onfocus="$(this).attr('focus','true')" onblur="$(this).attr('focus','false');" style="float: left;background-color:#CCC;height: 100%;width: 65%;color: black;font-weight:bold;overflow-x:hidden;" contenteditable="true">
-	    		<pre>publc class Main{
-	public static void main(String[] args){
-		System.out.println("Hello World");
-	 }
-}</pre>
-	    	</div>
-	    	<div style="float: left;background-color: #1b3749;height: 100%;width: 35%;color: white;font-weight:bold;overflow-x:hidden;">
-	    		<div>/*这是控制台*/</div>
-	    		<div>/*ctrl+r:运行代码*/</div>
-	    	</div>
-	    </div>
-	    <div  id="hhandle" style="width:100%;background-color: #1b3749;height: 0.3%;cursor: n-resize;color: white;"></div>
-	    
- 		<div id="content" style="height: 0px;width: 100%;overflow-x:hidden;">
-	    	<div id="menu" style="width: 100%;border:1px solid grey;"></div>
-		    <div id="editor" style="width: 100%;height: 380px;">
-		    	<!-- 编程攻略是一家Java培训机构，旨在培养全栈IT软件！我们认为IT培训的好坏的首要核心在于管理，以学生利益为中心 -->
-		    </div>
-	    </div>
-	   
+ 	<div id="data-content" style="float: left;height: 0px;width: 100%;overflow-x:hidden;width: 54.5%;">
+	    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
+		<div id="editor" style="width: 100%;height: 380px;">
+			<div style="font-size: 20px;font-weight: bold;color: #1b3749;">Hello……</div>
+		</div>
 	</div>
  	
  </div>
@@ -218,19 +199,7 @@ vhandle.onmousedown=function (e) {
         document.onmousemove=null;
     };
 };
-var hhandle=document.getElementById("hhandle");
-hhandle.onmousedown=function (e) {
-    var box=document.getElementById("java-editor");
-    document.onmousemove=function (e) {
-        box.style.cursor="n-resize";
-        box.style.height=e.clientY+"px";
-        var h=$("html").height()-$("#java-editor").height()-$("#hhandle").height();
-        $("#content").css("height",h);
-    };
-    document.onmouseup=function (e) {
-        document.onmousemove=null;
-    };
-};
+
 </script>
 </body>
 
