@@ -44,6 +44,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      }).click(function() {
          $("div[name=menu]").hide();
      });
+	 //绑定元素执行完毕后自动移除事件，可以方法仅触发一次的事件。
+	 $("div[id=menubox").one("click",function(e){
+		 if($("#menubox").width()>300){
+       		 $("#menubox").animate({width:300},1500);
+       		 var w=$(document).width()-300-$("#vhandle").width();
+       		 $("#message").animate({width:w},1000);
+		 }
+	 });
      $("div[name=category]").on("click mouseover", "div[name=item]>div",function(event) {
              switch (event.type) {
              	case "mouseover":
@@ -52,6 +60,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	                  }
 	                 else{$(this).css("cursor","pointer");}
                  break;
+             	
+             	break;
                  case "click":
                 	 //begin:如果没有子项目，发送ajax请求，如果有子项，可折叠
                 	 if($(this).attr("name")=="subItem"){
@@ -93,12 +103,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	 var id=$(this).attr("id");
                 	 var data={};
                 	 data.id=id;
-                	 if($("#menubox").width()>300){
-                		 $("#menubox").animate({width:300},"slow");
-                		 var w=$(document).width()-300-$("#vhandle").width();
-                		 console.info($(document).width());
-                		 $("#data-content").animate({width:w},"slow");
-                	 }
                 	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
                 		 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
                 		 editor.txt.html(msg);
@@ -135,7 +139,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  		$("#container").css("height",height);
  		$("#vhandle").css("height",height);
  		$("#category").css("height",(height-35-100));
- 		$("#data-content").css("height",height);
+ 		$("#message").css("height",height);
  	});
  	
 </script>
@@ -180,7 +184,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:save -->
 	</div>
  	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #ccc;height: 10px;cursor: e-resize;"></div>
- 	<div id="data-content" style="float: left;height: 0px;overflow-x:hidden;width: 9.5%;">
+ 	<div id="message" style="float: left;height: 0px;overflow-x:hidden;width: 9.5%;">
 	    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
 		<div id="editor" style="width: 100%;height: 380px;">
 			<div style="font-size: 20px;font-weight: bold;color: #1b3749;"></div>
@@ -195,9 +199,9 @@ vhandle.onmousedown=function (e) {
     var box=document.getElementById("menubox");
     document.onmousemove=function (e) {
         box.style.cursor="n-resize";
-            box.style.width=e.clientX+"px";
-            var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
-            $("#data-content").css("width",w);
+        box.style.width=e.clientX+"px";
+        var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
+        $("#message").css("width",w);
     };
     document.onmouseup=function (e) {
         document.onmousemove=null;
