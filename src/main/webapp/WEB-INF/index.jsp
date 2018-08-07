@@ -15,19 +15,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <script src="static/js/jquery-3.3.1.min.js"></script>
   <script src="static/editor/wangEditor.js"></script>
  <script>
- //使用ctrl+r运行代码
- $(document).keydown(function(e){
-	   if( e.ctrlKey  == true && e.keyCode == 82 ){
-		   var isfocus=$("div[name=java-code]").attr("focus");
-		   if(isfocus==="true"){
-				var data={};
-			    data.msg=$("div[name=java-code]").text();
-	 			$.post("<%=basePath%>compiler.jhtml",data);
-		   }
-		   
-	      return false; // 截取返回false就不会保存网页了
-	   }
-	}); 
  $(function() {
 
 	//隐藏浏览器滚动条
