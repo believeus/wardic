@@ -32,12 +32,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
          $("div[name=menu]").hide();
      });
 	 //绑定元素执行完毕后自动移除事件，可以方法仅触发一次的事件。
-	 $("div[id=menubox").one("click",function(e){
-		 if($("#menubox").width()>300){
-       		 $("#menubox").animate({width:300},1500);
-       		 var w=$(document).width()-300-$("#vhandle").width();
-       		 $("#message").animate({width:w},1000);
-		 }
+	
+	 var isMove=true;
+	 $("div[name=category]").on("click", "div[name=subChild]",function(event) {
+		isMove==true?
+		(
+			$("#menubox").animate({width:300},1500),
+			$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000)
+		 ):(isMove=false);
+		
 	 });
      $("div[name=category]").on("click mouseover", "div[name=item]>div",function(event) {
              switch (event.type) {
