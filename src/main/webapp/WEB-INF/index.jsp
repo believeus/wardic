@@ -1,4 +1,3 @@
-
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 String path = request.getContextPath();
@@ -94,6 +93,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                 	 var id=$(this).attr("id");
                 	 var data={};
                 	 data.id=id;
+                	 if($("#menubox").width()>300){
+                		 $("#menubox").animate({width:300},"slow");
+                		 var w=$(document).width()-300-$("#vhandle").width();
+                		 console.info($(document).width());
+                		 $("#data-content").animate({width:w},"slow");
+                	 }
                 	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
                 		 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
                 		 editor.txt.html(msg);
@@ -141,13 +146,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <div id="container" style="width: 100%;height: 100%;">
  <div style="width: 100%;height: auto;">
-	<div id="menubox" style="width: 45%;float: left;">
+	<div id="menubox" style="width: 90%;float: left;">
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;border-bottom: 1px solid grey;">编程大典</div>
 		<!-- begin:menu -->
 	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
-		     <div name="divItem" style="height: auto;margin-top:5px;">
+		     <div name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
 		      <div style="height: 25px;">
 		       <div style="height: 18px;width: 2px;background-color: white;float: left;position: relative;left: 20px;"></div>
 		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
@@ -174,11 +179,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	</div>
 	 	<!-- end:save -->
 	</div>
- 	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #1b3749;height: 10px;cursor: e-resize;"></div>
- 	<div id="data-content" style="float: left;height: 0px;width: 100%;overflow-x:hidden;width: 54.5%;">
+ 	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #ccc;height: 10px;cursor: e-resize;"></div>
+ 	<div id="data-content" style="float: left;height: 0px;overflow-x:hidden;width: 9.5%;">
 	    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
 		<div id="editor" style="width: 100%;height: 380px;">
-			<div style="font-size: 20px;font-weight: bold;color: #1b3749;">Hello……</div>
+			<div style="font-size: 20px;font-weight: bold;color: #1b3749;"></div>
 		</div>
 	</div>
  	
@@ -192,7 +197,6 @@ vhandle.onmousedown=function (e) {
         box.style.cursor="n-resize";
             box.style.width=e.clientX+"px";
             var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
-            console.info($("#menubox").width());
             $("#data-content").css("width",w);
     };
     document.onmouseup=function (e) {
