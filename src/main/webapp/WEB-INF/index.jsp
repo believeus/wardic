@@ -137,12 +137,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		     <div name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
 		      <div style="height: 25px;">
 		       <div style="height: 18px;width: 2px;background-color: white;float: left;position: relative;left: 20px;"></div>
-		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
+		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 25px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
 		      </div>
 		      <div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width: 95%;">
 		       <c:forEach var="child" items="${item.child}">
 		       		
-			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 85%;" contenteditable="false" >
+			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;" contenteditable="false" >
 				       <c:if test="${fn:length(child.child)!=0}">
 				    	 <div id="ex" style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
 				    	</c:if>	
