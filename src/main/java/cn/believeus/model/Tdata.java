@@ -14,7 +14,11 @@ public class Tdata extends TbaseEntity implements java.io.Serializable {
 	private static final long serialVersionUID = -3416419788711416943L;
 	private String content;
 	private Titem item;
-
+	public Tdata() {
+	}
+	public Tdata(String content){
+		this.content=content;
+	}
 	@Type(type="text")
 	public String getContent() {
 		return content;
@@ -25,8 +29,7 @@ public class Tdata extends TbaseEntity implements java.io.Serializable {
 	}
 
 	
-	@OneToOne
-	@JoinColumn(name="fk_itemId",unique=true)
+	@OneToOne(mappedBy="databox")
 	public Titem getItem() {
 		return item;
 	}

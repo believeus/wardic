@@ -12,6 +12,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <base href="<%=basePath%>">
  
  <title>编程攻略</title>
+  <script>
+ var browser =navigator.userAgent;
+  //是IE浏览器，就跳转页面
+  if(browser.indexOf("compatible")!=-1){
+	window.location.href="ieHell.jhtml";
+  }
+</script>
  <script src="static/js/jquery-3.3.1.min.js"></script>
   <script src="static/editor/wangEditor.js"></script>
  <script>
@@ -55,461 +62,457 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      }).click(function() {
          $("div[name=menu]").hide();
      });
-     $("div[name=category]").on("keydown mouseover dblclick contextmenu click", "div[name=item]>div",function(event) {
-
-             switch (event.type) {
-                 case "mouseover":
-                     if($(this).attr("contenteditable")=="true"){
-                    	 $(this).css("cursor","text");
-                      }
-                     else{$(this).css("cursor","pointer");}
-                     break;
-                 case "dblclick":
-                	 if($(this).css("background-color")!="rgb(45, 62, 80)"){return;}
-                     var isEdit=$(this).attr("contenteditable");
-                     if(isEdit=="true"){
-                         if($(this).text().trim()==""){
-                        	 $(this).text("请输入……");
-                          }
-                     }else{
-                         $(this).attr("contenteditable", true);
-                         $(this).css("border","1px solid grey");
-                         $(this).css("background-color", "white");
-                         $(this).css("color", "rgb(153, 153, 153)");
-                     }
-                     //关闭编辑器编辑模式
-                     editor.$textElem.attr('contenteditable', false);
-                     break;
-                 case "click":
-                	 //begin:如果没有子项目，发送ajax请求，如果有子项，可折叠
-                	 if($(this).attr("name")=="subItem"){
-                		
-                		 if($(this).attr("hasChild")=="true"){
-                			 $("div[pid="+$(this).attr("id")+"]").each(function(){
-                    			 if($(this).css("display")=="none"){
-                    				 $(this).slideDown();
-                    			 }else{
-                            		 $(this).slideUp();
-                            	 }
-                    		 });
-                		 }else{
-                			 var item={};
-                    		 item.id=$(this).attr("id");
-                    		 var oThis=$(this);
-                    		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
-                    			 var jsonData = $.parseJSON(data);
-                    			//因为是根据oid从小到大的顺序发送到ajax的
-                    			 //而oThis.after是每次都在oThis之后插入的
-                    			 //所以要逆过来编译sonData.length-1 到0
-                    			 //才能保证oid的正确顺序
-                    			 for(var i=jsonData.length-1;i>=0;i--){
-     								var div="<div name='subChild' id='"+jsonData[i].id+"' oid='"+jsonData[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #2d3e50;margin-top:5px;margin-left:20px;font-size:15px;color: rgb(153, 153, 153)' contenteditable='false'>"+jsonData[i].title+"</div>";
-                    				oThis.after(div);
-                    			 }
-                    			 oThis.attr("hasChild","true");
-                    		 });
-                		 }
-                		//end:如果没有子项目，发送ajax请求，如果有子项，可折叠
-                		
-                	 }
-                	 //begin:若有一个索引处于编辑状态，其他索引不得点击
-                	 var isEdit=$(this).attr("contenteditable");
-                	 if(isEdit=="true"){return;}
-                	 $(this).siblings().each(function(){
-                		 var _isEdit=$(this).attr("contenteditable");
-                		 if(_isEdit=="true"){
-                			 isEdit=_isEdit;
-                		 }
-                	 });
-                	 if(isEdit=="true"){
-                		 return;
-                	 }
-                	//end:若有一个索引处于编辑状态，其他索引不得点击
-                	 $("#content").animate({scrollTop:0},300);
-                	 editor.$textElem.attr('contenteditable', true);
-                	 $(this).parents("div[name=category]").find("div[name=item]>div").css("color","").removeAttr("click");
-                	 $(this).css("background-color","#2d3e50").attr("click","on");
-                	 $(this).css("color","white");
-                	 var id=$(this).attr("id");
-                	 var data={};
-                	 data.id=id;
-                	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-                		 editor.txt.html(msg);
-                	 });
-                	 break;
-                 case "keydown":
-                     //监听enter键
-                     if(event.which == "13"){
-                         $(this).attr("contenteditable","false");
-                         $(this).css("background-color","#f1f1f1");
-                         $(this).css("border","none");
-                         $("div[id=ex]").remove();
-                         //为什么此处要遍历所有子项?
-                         //因为添加一项的时候，会通通改变所有oid的值
-                         //当按下enter键的时候，会将所有oid改变的值存入数据库
-                         var divPid="div[pid="+$(this).attr("pid")+"]";
-                         $(divPid).each(function(){
-                       	  	//Begin:将子项数据保存到服务端
-                            var item={};
-                            item.title=$(this).html().trim();
-                            item.pid=$(this).attr("pid");
-                            item.oid=$(this).attr("oid");
-                            if($(this).attr("id")!=undefined){
-                                item.id=$(this).attr("id");
-                            }
-                            var oThis=$(this);
-                          	$.post("<%=basePath%>save.jhtml",item,function(message){
-                               var msg=message.split(":");
-                               var rdate=msg[0];
-                               var id=msg[1];
-                               if(rdate=="success"){
-                                   oThis.attr("id",id).attr("contenteditable", false);
-                                   oThis.css("background-color", "#2d3e50");
-                                   oThis.css("color", "white");
-                                   oThis.css("border","none");
-                                   oThis.blur();
-                               }else{
-                                   oThis.text("保存失败……");
-                               }
-                            }); 
-                            //End:将子项数据保存到服务端
-                         }); 
-                     }
-
-                     break;
-
-             }
-
+	 /*Begin:展开子目录*/
+     $("html").on("click","div[name=subItem]",function(){
+    	if($(this).attr("hasChild")=="true"){
+ 			 $($(this).next().children()).each(function(){
+     			 if($(this).css("display")=="none"){
+     				 $(this).slideDown();
+     			 }else{
+             		 $(this).slideUp();
+             	 }
+     		 });
+    	}else{
+  			 var item={};
+      		 item.id=$(this).attr("id");
+      		 var oThis=$(this);
+      		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
+      			 var data = $.parseJSON(data);
+      			 for(var i=0;i<data.length;i++){
+					var div="<div name='subChild' id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #2d3e50;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
+      				oThis.next().append(div);
+      			 }
+      			 oThis.attr("hasChild","true");
+      		 });
+    	}
+     });
+     /*End:展开子目录*/
+     
+     /*Begin:点击菜单获取数据*/
+     $("html").on("click","div[name=subChild]",function(){
+    	 /*begin:编辑状态点击无效*/
+    	 if($(this).attr("contenteditable")=="true"){return;}
+    	 /*end:编辑状态点击无效*/
+     	 $("#content").animate({scrollTop:0},300);
+     	 editor.$textElem.attr('contenteditable', true);
+     	 $(this).parents("div[name=menubox]").find("div[name=subChild]").css("color","").removeAttr("click");
+     	 $(this).css("background-color","#2d3e50").attr("click","on");
+     	 $(this).css("color","white");
+     	 var id=$(this).attr("id");
+     	 var data={};
+     	 data.id=id;
+     	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+     		 editor.txt.html(msg);
+     	 });
+     });
+     /*end:点击菜单获取数据*/
+     
+     /*Begin:双击进入编辑模式*/
+     $("html").on("dblclick","div[name=subChild]",function(){
+         if($(this).attr("contenteditable")=="false"){
+        	$(this).attr("contenteditable", true);
+         	$(this).css("border","1px solid grey");
+         	$(this).css("background-color", "white");
+          	$(this).css("color", "#2d3e50");
          }
+         //关闭编辑器编辑模式
+         editor.$textElem.attr('contenteditable', false);
+     });
+     /*end:双击进入编辑模式*/
+     
+     /*begin:敲enter键,将修改的代码保存到服务器中*/
+      $("html").on("keydown","div[name=subChild]",function(event){
+    	  //非编辑状态enter键无效
+    	  if($(this).attr("contenteditable")=="false"){return;}
+    	  if(event.which == "13"){ //enter键的键值为13
+    		$(this).attr("contenteditable", false),
+           	$(this).css("background-color", "#2d3e50"),
+           	$(this).css("color", "white"),
+           	$(this).css("border","none");
+            var item={};
+            item.title=$(this).text().trim();
+            item.pid=$(this).attr("pid");//父id
+            item.oid=$(this).attr("oid");//排序id
+            if($(this).attr("id")!=undefined){//新添加的菜单是没有id属性的,js的if语句可以判断undefind
+               item.id=$(this).attr("id");
+            }
+            var oThis=$(this);
+            /*Begin:将修改的目录保存到数据库*/
+            $.post("<%=basePath%>save.jhtml",item,function(message){
+                var msg=message.split(":");
+                var rdate=msg[0];
+                var id=msg[1];
+                if(rdate=="success"){
+                   oThis.attr("id",id).attr("contenteditable", false);
+                   oThis.css("background-color", "#2d3e50");
+                   oThis.css("color", "white");
+                   oThis.css("border","none");
+                   oThis.blur();
+                 }else{
+                     oThis.text("保存失败……");
+                 }
+              }); 
+            /*End:将修改的目录保存到数据库*/
+          }
+      });
+	
+     /*Begin:给subChild添加菜单*/
+      $("div[name=menubox]").on("contextmenu","div[name=subChild]",function(e){
+    	  if($(this).css("color")!="rgb(255, 255, 255)"){return;};//如果没有被选中,则禁用右键菜单
+    	  $("div[name=menu]").remove();//把原来的右键菜单删除
+    	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #2d3e50;font-size:12px;line-height:25px;color:#2d3e50;'>"+
+     	 		"<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>"+
+          		"<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>"+
+          	  "</div>";
+          	   $(div).appendTo('body');
+               var x=e.pageX;
+               var y=e.pageY;
+               $("div[name=menu]").css("left",x).css("top",y).show();
 
-     ).css("cursor","pointer");
-
+               //菜单监听
+               var oThis=$(this);
+               $("div[name=menu] span").on("click mouseover mouseout", function(e) {
+                   switch(e.type){
+                       case "mouseover":
+                           $(this).css("background-color","#ccc");
+                           break;
+                       case "mouseout":
+                           $(this).css("background-color","white");
+                           break;
+                       case "click":
+                           var divname=$(e.target).attr("name");
+                           switch(divname){
+                               case "itemdel":
+                                   //删除子项
+                                   var data={};
+                                   data.id=oThis.attr("id");
+                                   //其项以下的兄弟节点oid全部-1
+                                   $.post("<%=basePath%>del.jhtml",data,function(message){
+                                       oThis.nextAll().each(function(){
+                                    	   console.info($(this));
+                                           var i=parseInt($(this).attr("oid"))-1;
+                                           $(this).attr("oid",i);
+                                           var item={};
+                                           item.data=$(this).attr("id")+":"+$(this).attr("oid");
+                                           console.info(item.data);
+                                           $.post("<%=basePath%>updateOrder.jhtml",item);
+                                       });
+                                       oThis.remove();
+                                   });
+                                  
+                                  break;
+                               case "itemMovUp":
+                              	 var item={};
+                              	 var thisId=oThis.attr("id");
+                              	 var thisOid=oThis.attr("oid");
+                              	 var prevId=oThis.prev().attr("id");
+                              	 var prevOid=oThis.prev().attr("oid");
+                              	 oThis.attr("oid",prevOid);
+                              	 oThis.prev().attr("oid",thisOid);
+                              	 item.data=thisId+":"+prevId;
+                              	 $.post("<%=basePath%>moveup.jhtml",item,function(msg){
+                              		var thisDiv=oThis.clone();
+                              		oThis.prev().before(thisDiv);
+                              		oThis.remove();
+                                 });
+                                 break;
+                           };
+               }
+      	});
+      });
+     /*End:给subChild添加菜单*/
+     
+     
      $("div[id=mainItem]").dblclick(function(){
-    	 	//获取最后一个兄弟节点
-    	 var oid=$(this).parent().children("div:last-child").find("div[name='indexItem']").attr("oid");
-    	 oid=(oid==undefined?0:parseInt(oid)+1);
+    	 //获取最后一个兄弟节点
+    	 var oid=$(this).parent().children("div:last-child").find("div[name=indexItem]").attr("oid");
+    	 oid==undefined?(oid=0):(oid=parseInt(oid)+1);
          var div="<div name='divItem' style='height: auto;margin-top:5px;'>"+
              "<div style='height: 35px;'>"+
              "<div style='height: 22px;width: 2px;background-color: #563d7c;float: left;position: relative;left: 20px;'></div>"+
-             "<div  name='indexItem' oid="+oid+" style='width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color: #563d7c;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:white;font-size: 15px;' contenteditable='true'  >请输入……</div>"+
+             "<div  name='indexItem' oid="+oid+" style='width:80%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color: #563d7c;float: left;font-weight: bold;line-height: 22px;position: relative;left: 30px;background-color:white;font-size: 15px;cursor: pointer;' contenteditable='true'  >请输入……</div>"+
              "</div>"+
-             	"<div name='item' style='height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;'></div>"+
+             	"<div name='item' style='height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width:100%;'></div>"+
              "</div>";
-          
          $(this).parent().append(div);
       
      });
-     $("div[name=category]").on("dblclick contextmenu click","div[name=indexItem]",function(e){
-         switch (e.type) {
-            //折叠
-             case "click":
-            	var obj=$(this).parent().next();
-                if(obj.css("display")=="none"){obj.slideDown();}
-                else{obj.slideUp();}
-            	
-            	 
-             break;
-             case "dblclick":
-                 var isEdit=$(this).attr("contenteditable");
-                 if(isEdit=="true"){
-	                 if($(this).text().trim()==""){
-	                     $(this).text("请输入……");
-	                 }
-	                 //begin:将数据发送到服务端
-	                 var data={};
-	                 data.title=$(this).text().trim();
-	                 data.pid=0;
-	                 data.oid=$(this).attr("oid");
-	                 if(!$(this).attr("id")==""){
-	                     data.id=$(this).attr("id");
-	                 }
-	                 var oThis=$(this);
-	                 $.post("<%=basePath%>save.jhtml",data,function(message){
-	                     var msg=message.split(":");
-	                     var rdate=msg[0];
-	                     var id=msg[1];
-	                     if(rdate=="success"){
-	                         oThis.attr("contenteditable", false);
-	                         oThis.css("border","none");
-	                         oThis.css("background-color", "#f1f1f1");
-	                         oThis.css("color","#563d7c");
-	                         oThis.attr("id",id);
-	                         oThis.blur();
-	                     }else{
-	                         oThis.text("保存失败……");
-	                     }
-	
-	                 });
-                 //end:将数据发送到服务端
+     /*Begin:点击第一父节点会展开或收缩*/
+     $("html").on("click","div[name=indexItem]",function(e){
+    	var obj=$(this).parent().next();
+        if(obj.css("display")=="none"){
+        	obj.slideDown();
+        }else{
+        	obj.slideUp();
+        }
+     });
+     /*End:点击第一父节点会展开或收缩*/
+     
+     /*Begin:按enter键保存数据*/
+     $("html").on("keydown","div[name=indexItem]",function(event){
+    	//非编辑状态enter键无效
+   	  	if($(this).attr("contenteditable")=="false"){return;}
+    	if(event.which == "13"){
+    		$(this).attr("contenteditable", false);
+    		if($(this).text().trim()==""){
+                $(this).text("请输入……");
+            }
+            //begin:将数据发送到服务端
+            var data={};
+            data.title=$(this).text().trim();
+            data.pid=0;
+            data.oid=$(this).attr("oid");
+            if($(this).attr("id")!=undefined){
+                data.id=$(this).attr("id");
+            }
+            var oThis=$(this);
+            $.post("<%=basePath%>save.jhtml",data,function(message){
+                var msg=message.split(":");
+                var rdate=msg[0];
+                var id=msg[1];
+                if(rdate=="success"){
+                    oThis.css("border","none");
+                    oThis.css("background-color", "#2d3e50");
+                    oThis.css("color","white");
+                    oThis.attr("id",id);
+                    oThis.blur();
+                }else{
+                    oThis.text("保存失败……");
+                }
+
+            });
+        //end:将数据发送到服务端
+    	}
+     });
+     /*End:按enter键保存数据*/
+     
+     /*Begin:给div[name=subItem]添加keydown事件*/
+     $("html").on("keydown","div[name=subItem]",function(event){
+    	//非编辑状态enter键无效
+    	if($(this).attr("contenteditable")=="false"){return;}
+     	if(event.which == "13"){
+     		$(this).attr("contenteditable", false);
+     		if($(this).text().trim()==""){
+                 $(this).text("请输入……");
+             }
+             //begin:将数据发送到服务端
+             var data={};
+             data.title=$(this).text().trim();
+             data.pid=$(this).attr("pid");
+             data.oid=$(this).attr("oid");
+             if($(this).attr("id")!=undefined){
+                 data.id=$(this).attr("id");
+             }
+             var oThis=$(this);
+             $.post("<%=basePath%>save.jhtml",data,function(message){
+                 var msg=message.split(":");
+                 var rdate=msg[0];
+                 var id=msg[1];
+                 if(rdate=="success"){
+                     oThis.css("border","none");
+                     oThis.css("background-color", "#2d3e50");
+                     oThis.css("color","white");
+                     oThis.attr("id",id);
+                     oThis.parent().attr("box-id",id);
+                     oThis.blur();
                  }else{
-                	$(this).attr("contenteditable", true);
-                    $(this).css("border","1px solid grey");
-                    $(this).css("background-color", "white");
-                  }
-                 break;
-             case "contextmenu":
-                 if($(this).attr("contenteditable")=="true"){return;}
-                 $("div[name=menu]").remove();
-                 var div="<div name='menu' style='box-sizing: border-box;position: absolute;width: 130px;border-radius: 5px;background-color: white;height:55px;font-weight: bold;border:1px solid #2d3e50;font-size:14px;line-height:25px;color:#2d3e50;'>"+
-                     "<div style='text-align:center'><span name='itemMovUp'>向上移动</span>|<span name='itemMovDown'>向下移动</span></div>"+
-                     "<div style='text-align:center'><span name='itemadd'>添加子项</span>|<span name='itemdel'>删除该项</span></div>"+
-                     "</div>";
-                 $(div).appendTo('body');
-                 var oThis=$(this);
-                 $("div[name=menu] span").on("click mouseover mouseout", function(e) {
-                     switch(e.type){
-                         case "mouseover":
-                             $(this).css("cursor","pointer").css("background-color","#f1f1f1");
-                             break;
-                         case "mouseout":
-                             $(this).css("background-color","white");
-                             break;
-                         case "click":
-                             //添加子项
-                             if($(this).attr("name")=="itemadd"){
-                                 $('div[name=menu]').remove();
-                                 var pid=oThis.parent().children("div[name=indexItem]").attr("id");
-                                 var oid=0;
-                                 var lastDiv=oThis.parent().next().children("div:last-child");
-                                 if(lastDiv.length!=0){
-                                     oid=parseInt(lastDiv.attr("oid"))+1;
-                                 }
-                                 var div="<div oid="+oid+" pid="+pid+" hasChild='false' name='subItem' contenteditable='true' style='height:22px;border:1px solid grey;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color:white;margin-top:5px;font-size: 15px;'>请输入……</div>";
-                                 oThis.parent().next().append(div);
+                     oThis.text("保存失败……");
+                 }
 
-                             }else if($(this).attr("name")=="itemdel"){
-                            	 var id=oThis.attr("id");
-                            	 var item={};
-                            	 item.id=id;
-                            	 $.post("<%=basePath%>del.jhtml",item,function(msg){
-                            		 oThis.parent().parent().remove();
-                            	 });
-                             //上下移动
-                             }else{
-                            	 var otherDiv="";
-                            	 var otherDivChild="";
-                            	 switch($(this).attr("name")){
-                         	 		case "itemMovUp":
-                         	 		 	otherDiv=oThis.parents("div[name=divItem]").prev();
-                         	 		break;
-                         	 		case "itemMovDown":
-                         	 			otherDiv=oThis.parents("div[name=divItem]").next();
-                         	 		break;
-                         	 	 }
-                                 otherDivChild=otherDiv.find("div[name=indexItem]");
-                            	 //获取各自的oid
-                            	 var otherOid=otherDivChild.attr("oid");
-                            	 var thisOid=oThis.attr("oid");
-                            	 var thisId=oThis.attr("id");
-                            	 var otherId=otherDivChild.attr("id");
-                            	 oThis.attr("oid",otherOid);
-                            	 var div=oThis.parents("div[name=divItem]").remove().clone();
-                            	 switch($(this).attr("name")){
-                            	 	case "itemMovUp":
-                            	 		otherDiv.before(div);
-                            	 	break;
-                            	 	case "itemMovDown":
-                            	 		otherDiv.after(div);
-                            	 	break;
-                            	 }
-                            	 otherDivChild.attr("oid",thisOid);
-                            	 //将数据传送到服务端
-                                 var item={};
-                                 item.data=thisId+":"+otherId+":"+thisOid+":"+otherOid;
-                                 $.post("<%=basePath%>alterOrder.jhtml",item); 
-                            	 
-                             } 
-                             break;
-                     };
-
-                 });
-                 var x=e.pageX;
-                 var y=e.pageY;
-                 $("div[name=menu]").css("left",x).css("top",y).show();
-                 break;
-
-         };
+             });
+         //end:将数据发送到服务端
+     	}
      });
-     //给每一个子项目添加右键菜单
-     $("div[name=category]").on("contextmenu","div[name=item]>div",function(e){
-    	 if($(this).css("background-color")!="rgb(45, 62, 80)"){return;}
-         $("div[name=menu]").remove();
-         var div="";
-         if($(this).attr("name")=="subChild"){
-        	 div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #2d3e50;font-size:12px;line-height:25px;color:#2d3e50;'>"+
-        	 "<div style='text-align:center'><span name='itemMovUp'>向上移动</span></div>"+
-        	 "<div style='text-align:center'><span name='itemMovDown'>向下移动</span></div>"+
-             "<div style='text-align:center'><span name='itemdel'>删除该项</span></div>"+
-             "</div>";
-         }else if($(this).attr("name")=="subItem"){
-	         div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 120px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #2d3e50;font-size:12px;line-height:25px;color:#2d3e50;'>"+
-	             "<div style='text-align:center'><span name='itemUpAdd'>向上插入</span>｜<span name='itemdownAdd'>向下插入</span></div>"+
-	             "<div style='text-align:center'><span name='itemMovUp'>向上移动</span>｜<span name='itemMovDown'>向下移动</span></div>"+
-	             "<div style='text-align:center'><span name='itemdel'>删除该项</span>｜<span name='itemAdd'>添加子项</span></div>"+
-	             "</div>";
-         }
-         	
-         $(div).appendTo('body');
-         //菜单监听
-         var oThis=$(this);
-         $("div[name=menu] span").on("click mouseover mouseout", function(e) {
-             switch(e.type){
-                 case "mouseover":
-                     $(this).css("cursor","pointer").css("background-color","#f1f1f1");
-                     break;
-                 case "mouseout":
-                     $(this).css("background-color","white");
-                     break;
-                 case "click":
-                     var divname=$(e.target).attr("name");
-                     var div=oThis.clone().text("请输入……").attr("contenteditable",true).css("background-color","white").css("border","1px solid grey").css("color","#2d3e50").removeAttr("id");
-                     switch(divname){
-                         //向下添加一项
-                         case "itemdownAdd":
-                        	 oThis.siblings().css("background-color","#f1f1f1");
-                        	 oThis.parent().find("div[pid="+oThis.attr('id')+"]").last().after(div).css("color","#2d3e50");
-                             oThis.nextAll().each(function(){
-                            	 if($(this).attr("name")!="subChild"){
-                                 	var i=parseInt($(this).prev().attr("oid"))+1;
-                                 	$(this).attr("oid",i);
-                            	 }
+     /*End:给div[name=subItem]添加keydown事件*/
+     
+      
+     /*Begin:双击进入编辑模式*/
+      $("html").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
+    	  var isEdit=$(this).attr("contenteditable");
+          if(isEdit=="false"){
+        	  $(this).attr("contenteditable", true);
+              $(this).css("border","1px solid grey");
+              $(this).css("color","#2d3e50");
+              $(this).css("background-color", "white");
+          }
+      });
+      /*End:双击进入编辑模式*/
+      
+      /*Begin:给subItem添加右键菜单*/
+      $("div[name=menubox]").on("contextmenu","div[name=subItem]",function(e){
+    	  $("div[name=menu]").remove();//把原来的右键菜单删除
+    	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #2d3e50;font-size:12px;line-height:25px;color:#2d3e50;'>"+
+          		"<div style='text-align:center;cursor:pointer;'><span name='itemAddChild'>添加子项</span></div>"+
+          		"<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>"+
+          		"<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>"+
+          	  "</div>";
+          	$(div).appendTo('body');
+          	//获取鼠标x、y点的位置显示菜单
+            var x=e.pageX;
+            var y=e.pageY;
+            $("div[name=menu]").css("left",x).css("top",y).show();
+            //菜单监听
+            var oThis=$(this);
+            $("div[name=menu] span").on("click mouseover mouseout", function(e) {
+            	switch(e.type){
+                case "mouseover":
+                    $(this).parent().css("background-color","#ccc");
+                    break;
+                case "mouseout":
+                    $(this).parent().css("background-color","white");
+                    break;
+               
+                case "click":
+                	 var divname=$(e.target).attr("name");
+                	 switch(divname){
+                	  case "itemdownAdd":
+                     	var pid=oThis.attr("pid");
+                     	var oid=parseInt(oThis.attr("oid"))+1;
+                     	var div="<div id='itembox' oid="+oid+">"+
+     			        			"<div  pid="+pid+" haschild='true' oid="+oid+" name='subItem' style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap;  margin-top: 5px;background-color: white; cursor: text; color: #2d3e50;font-size: 15px;width:75%;cursor: pointer;' contenteditable='true'>请输入……</div>"+
+     			        			"<div id='box' style='width:100%;'></div>"+
+     			    			 "</div>";
+                     	oThis.parent().after(div);
+                     	break;
+                	 	case "itemAddChild":
+                	 		var divOid=oThis.next().children("div:last-child").attr("oid");
+                	 		if(divOid!=undefined){
+                	 			divOid++;
+                	 		}else {divOid=0;}
+                	 		var div="<div name='subChild'  oid="+divOid+" pid="+oThis.attr("id")+" style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #2d3e50;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer;background-color:white;color:#2d3e50;' contenteditable='true'>请输入……</div>";
+                	 		oThis.next().append(div);
+                	 	break;
+                	 	case "itemMovUp":
+                	 		console.info(oThis.parent());
+                	 		var thisDiv=oThis.parent();
+                	 		var otherDiv=oThis.parent().prev();
+                	 		 var item={};
+                             item.data=thisDiv.attr("box-id")+":"+otherDiv.attr("box-id");
+                             $.post("<%=basePath%>moveup.jhtml",item,function(msg){
+                           	  var thisOid=thisDiv.attr("oid");
+                           	  var otherOid=otherDiv.attr("oid");
+                           	  otherDiv.attr("oid",thisOid);
+                           	  thisDiv.attr("oid",otherOid);
+                           	  
+                           	  //把子项div也改变oid…………
+                           	  oThis.attr("oid",otherOid);
+                           	  otherDiv.find("div[name=subItem]").attr("oid",thisOid);
+                           	  var div=thisDiv.clone();
+                           	  otherDiv.before(div);
+                           	  thisDiv.remove();
                              }); 
-                             break;
-                         //向上添加一项
-                         case "itemUpAdd":
-                        	 oThis.siblings().css("background-color","#f1f1f1");
-                             oThis.before(div);
-                        	 oThis.prev().css("color","#2d3e50");
-                             //向上插入一项,以下的项逐步加一
-                             oThis.prev().nextAll().each(function(){
-                                 var i=parseInt($(this).attr("oid"))+1;
-                                 $(this).attr("oid",i);
-                             });
+                	 		break;
+                	 	case "itemdel":
+                	 		//删除子项
+                            var data={};
+                            data.id=oThis.attr("id");
+                            //其项以下的兄弟节点oid全部-1
+                            $.post("<%=basePath%>del.jhtml",data,function(message){
+                                oThis.parent().nextAll().each(function(){
+                                	
+                                    var i=parseInt($(this).attr("oid"))-1;
+                                    $(this).find("div[name=subItem]").attr("oid",i);
+                                    $(this).attr("oid",i);
+                                    var item={};
+                                    item.data=$(this).attr("id")+":"+$(this).attr("oid");
+                                    $.post("<%=basePath%>updateOrder.jhtml",item);
+                                });
+                                oThis.parent().remove();
+                                
+                            });
+                	 		break;
+                	 }
+                	break;
+            }
+          });
+    	  
+      });
+      /*End:给subItem添加右键菜单*/
+      
+      /*Begin:给indexItem添加右键菜单*/
+      $("div[name=menubox]").on("contextmenu","div[name=indexItem]",function(e){
+    	  if($(this).attr("contenteditable")=="true"){return;}
+          $("div[name=menu]").remove();
+          var div="<div name='menu' style='box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;height:80px;font-weight: bold;border:1px solid #2d3e50;font-size:14px;line-height:25px;color:#2d3e50;'>"+
+              		"<div style='text-align:center;cursor: pointer;'><span name='itemAddChild'>添加子项</span></div>"+
+              		"<div style='text-align:center;cursor: pointer;'><span name='itemMovUp'>向上移动</span></div>"+
+              		"<div style='text-align:center;cursor: pointer;'><span name='itemdel'>删除该项</span></div>"+
+              	  "</div>";
+          $(div).appendTo('body');
+          var x=e.pageX;
+          var y=e.pageY;
+          $("div[name=menu]").css("left",x).css("top",y).show();
+          var oThis=$(this);
+          $("div[name=menu] span").on("click mouseover mouseout", function(e) {
+        	  switch(e.type){
+              case "mouseover":
+                  $(this).css("cursor","pointer").css("background-color","#f1f1f1");
+                  break;
+              case "mouseout":
+                  $(this).css("background-color","white");
+                  break;
+              case "click":
+                  //添加子项
+                  if($(this).attr("name")=="itemAddChild"){
+                      var divOid=0;
+                      var lastDiv=oThis.parent().next().children("div:last-child");
+                      console.info(oThis);
+                      console.info(lastDiv);
+                      if(lastDiv.length!=0){
+                    	  divOid=parseInt(lastDiv.attr("oid"))+1;
+                      }
+                      var div="<div id='itembox' oid='"+divOid+"'>"+
+  			        			"<div  oid='"+divOid+"' pid='"+oThis.attr("id")+"' hasChild='false' name='subItem' style='height: 22px;;border:1px solid grey;text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: white; margin-top: 5px; cursor: text; color: #2d3e50;;font-size: 15px;width:80%;cursor: pointer;;background-color:white;' contenteditable='true'>请输入……</div>"+
+  			            		"<div id='box' style='width:100%;'></div>"+
+  			                  "</div>";
+                      oThis.parent().next().append(div);
 
-                             break;
-                         case "itemdel":
-                             //删除子项
-                             var data={};
-                             data.id=oThis.attr("id");
-                             //其项以下的兄弟节点oid全部-1
-                             $.post("<%=basePath%>del.jhtml",data,function(message){
-                                 oThis.nextAll().each(function(){
-                                     var i=parseInt($(this).attr("oid"))-1;
-                                     $(this).attr("oid",i);
-                                     var item={};
-                                     item.data=$(this).attr("id")+":"+$(this).attr("oid");
-                                     $.post("<%=basePath%>updateOrder.jhtml",item);
-                                 });
-                                 if(oThis.attr("name")=="subItem"){
-                                	$("div[pid="+oThis.attr('id')+"]").remove();
-                                 }
-                                	 oThis.remove();
-                                 
-                             });
-
-                             break;
-                         case "itemMovDown":
-                        	 if(oThis.next().attr("name")=="subItem"&&oThis.attr("name")!="subItem"){return;}
-                        	 	 oThis.attr("hasChild","false");
-                        	 	 var item={};
-                        		 var thisId=oThis.attr("id");
-                        		 if(oThis.attr("name")=="subChild"){
-                            		 var prevId=oThis.next().attr("id");
-                            		 var ctxt= oThis.text().trim();
-                            		 var otxt=oThis.next().text().trim();
-                            		 item.data=thisId+":"+prevId;
-                            		 $.post("<%=basePath%>alterOrder.jhtml",item,function(msg){
-                                         //交换文本信息
-                                         oThis.text(otxt).next().text(ctxt);
-                                     });
-                            		 
-                            	 }else if(oThis.attr("name")=="subItem"){
-                            		var thisOid=oThis.attr("oid");
-                         			//删除该子项
-                                  	$("div[pid="+thisId+"]").remove();
-                                  	var nextOid=(window.parseInt(oThis.attr("oid"))+1);
-                                  	var nextDiv=$("div[name=subItem][oid="+nextOid+"]");
-                                  	nextDiv.attr("hasChild","false");
-                                  	var nextId=nextDiv.attr("id");
-                                  	$("div[pid="+nextId+"]").remove();
-                                  	//将数据传送到服务端
-                                  	var item={};
-                                  	item.data=thisId+":"+nextId+":"+thisOid+":"+nextOid;
-                                  	$.post("<%=basePath%>alterOrder.jhtml",item,function(msg){
-                                      	//交换文本信息
-                                      	var div=oThis.clone().attr("oid",nextOid);
-                                  		nextDiv.after(div).attr("oid",thisOid);
-                                   	 	oThis.remove();
-                                  	});
-                            	 }
-                        		
-                             break;
-                         case "itemMovUp":
-                        	 if(oThis.prev().attr("name")=="subItem"&&oThis.attr("name")!="subItem"){return;}
-                        	 oThis.attr("hasChild","false");
-                        	 var item={};
-                        	 var thisId=oThis.attr("id");
-                        	 if(oThis.attr("name")=="subChild"){
-                        		 var prevId=oThis.prev().attr("id");
-                        		 var ctxt= oThis.text().trim();
-                        		 var otxt=oThis.prev().text().trim();
-                        		 item.data=thisId+":"+prevId;
-                        		 $.post("<%=basePath%>alterOrder.jhtml",item,function(msg){
-                        			 oThis.text(otxt).prev().text(ctxt);
-                                 });
-                        		 
-                        	 }else if(oThis.attr("name")=="subItem"){
-                        		//删除该子项
-                                 var thisOid=oThis.attr("oid");
-                                 $("div[pid="+thisId+"]").remove();
-                                 var prevOid=(window.parseInt(oThis.attr("oid"))-1);
-                                 var prevDiv=$("div[name=subItem][oid="+prevOid+"]");
-                                 var prevId=prevDiv.attr("id");
-                                 prevDiv.attr("hasChild","false");
-                                 $("div[pid="+prevId+"]").remove();
-                                 //获取上一个兄弟节点
-                                 var prevId=oThis.prev().attr("id");
-                                 
-                                 item.data=thisId+":"+prevId+":"+thisOid+":"+prevOid;
-                                 $.post("<%=basePath%>alterOrder.jhtml",item,function(msg){
-                                	 var div=oThis.clone().attr("oid",prevOid);
-                                	 prevDiv.before(div).attr("oid",thisOid);
-                                	 oThis.remove();
-                                 });
-                        	 }
-                             
-                             break;
-                         case "itemAdd":
-                        	  //添加新的一项,将div的滚动条移动到最尾
-                        	  if($("div[pid="+oThis.attr("id")+"]").last().length==0){
-                        		  var div="<div name='subChild' oid='0' pid="+oThis.attr("id")+" contenteditable='true' style='background-color:white;border:1px solid grey;margin-top:5px;margin-left:20px;font-size:15px;'>请输入……</div>";
-                        		  oThis.after(div);
-                        	  }else{
-                        		  var oid=(window.parseInt($("div[pid="+oThis.attr("id")+"]").last().attr("oid"))+1);
-                            	  var div="<div name='subChild' oid="+oid+" pid="+oThis.attr("id")+" contenteditable='true' style='background-color:white;border:1px solid grey;margin-top:5px;margin-left:20px;font-size:15px;'>请输入……</div>";
-                            	  $("div[pid="+oThis.attr("id")+"]").last().after(div);
-                        	  }
-                        	  //距离顶部的距离
-                        	  $("#category").scrollTop($("#category")[0].scrollHeight );
-                        	 break;
-                     }
-                     break;
-             };
-
-         });
-         //获取鼠标x、y点的位置
-         var x=e.pageX;
-         var y=e.pageY;
-         $("div[name=menu]").css("left",x).css("top",y).show();
-     });
- });
+                  }else if($(this).attr("name")=="itemdel"){
+                 	 var id=oThis.attr("id");
+                 	 var item={};
+                 	 item.id=id;
+                 	 $.post("<%=basePath%>del.jhtml",item,function(msg){
+                 		 oThis.parent().parent().remove();
+                 	 });
+                  //上下移动
+                  }else if($(this).attr("name")=="itemMovUp"){
+                	  var thisDiv=oThis.parents("div[name=divItem]");
+                	  var thisItem=$(thisDiv).find("div[name=indexItem]");
+                	  var otherDiv=oThis.parents("div[name=divItem]").prev();
+                	  var otherItem=$(otherDiv).find("div[name=indexItem]");
+                	  
+                	  var thisId=$(thisItem).attr("id");
+                	  var otherId=$(otherItem).attr("id");
+                	  console.info(thisId);
+                	  console.info(otherId);
+                 	  //将数据传送到服务端
+                      var item={};
+                      item.data=thisId+":"+otherId;
+                      $.post("<%=basePath%>moveup.jhtml",item,function(msg){
+                    	  var thisOid=thisItem.attr("oid");
+                    	  var otherOid=otherItem.attr("oid");
+                    	  thisItem.attr("oid",otherOid);
+                    	  otherItem.attr("oid",thisOid);
+                    	  var div=thisDiv.clone();
+                    	  otherDiv.before(div);
+                    	  thisDiv.remove();
+                      }); 
+                 	 
+                  } 
+                  break;
+          	};
+          });
+          /*End:给indexItem添加右键菜单*/
+    	  
+      });
+    });
  </script>
  <!-- 设置导航的高度 -->
  <script>
  	$(function(){
  		$("#container").css("height",$(document).height());
  		var height=($(document).height())-150;
- 		$("#category").css("height",(height-35));
+ 		$("#menubox").css("height",(height-35));
  		$("#content").css("height",(height-35));
  	});
 </script>
@@ -532,25 +535,26 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <div style="width: 100%;height: auto;">
 	<div style="width: 18%;float: left;">
 		<!-- begin:menu -->
-	  	<div style="width: 100%;background-color: #2d3e50;overflow-x:hidden;height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
+	  	<div style="width: 100%;background-color: #2d3e50;overflow-x:hidden;height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="menubox" name="menubox">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
-		     <div name="divItem" style="height: auto;margin-top:5px;">
+		     <div name="divItem" style="height: auto;margin-top:5px;" >
 		      <div style="height: 25px;">
 		       <div style="height: 18px;width: 2px;background-color: white;float: left;position: relative;left: 20px;"></div>
-		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#2d3e50;font-size: 15px;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
+		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 22px;position: relative;left: 30px;background-color:#2d3e50;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
 		      </div>
 		      <div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;">
 		       <c:forEach var="child" items="${item.child}">
-		       		
-			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #2d3e50; margin-top: 5px; cursor: text; color: white;;font-size: 15px;" contenteditable="false" >
+		        <div id="itembox" oid="${child.oid}" box-id="${child.id}">
+			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #2d3e50; margin-top: 5px; cursor: text; color: white;;font-size: 15px;width:75%;cursor: pointer;" contenteditable="false" >
 				       <c:if test="${fn:length(child.child)!=0}">
-				    	 <div id="ex" style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
+				    	 <div style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
 				    	</c:if>	
 				    	${child.title}
 			        </div>
+			        <div id="box" style="width:100%;"></div>
+			    </div>
 		       </c:forEach>	
-			       
 		      </div>
 		     </div>
 		    </c:forEach>

@@ -44,7 +44,13 @@ public class IndexController {
 		modelView.addObject("itembox", itembox);
 		return modelView;
 	}
-	
+	@RequestMapping("/ieHell")
+	public ModelAndView IEhell(){
+		ModelAndView modelView = new ModelAndView();
+		modelView.setViewName("/WEB-INF/hellIE.jsp");
+		return modelView;
+	}
+
 	@RequestMapping("/findItem")
 	@ResponseBody
 	public String findItem(int id) {
@@ -57,10 +63,7 @@ public class IndexController {
 	@ResponseBody
 	public String findData(int id) {
 		Tdata data = ((Titem)service.findObject(Titem.class, id)).getDatabox();
-		if (data!=null) {
-			return data.getContent();
-		}
-		return "<h3>请输入文章内容……</h3>";
+		return data.getContent();
 
 	}
 	
@@ -109,36 +112,22 @@ public class IndexController {
 			Titem pItem = (Titem) service.findObject(Titem.class, pid);
 			item.setParent(pItem);
 		}
+		item.setDatabox(new Tdata("<h1>请输入文章内容……</h1>"));
 		service.saveOrUpdate(item);
 		return "success:" + item.getId();
 	}
 
 	@ResponseBody
-	@RequestMapping(value = "/alterOrder")
-	public String alterOrder(String data) {
+	@RequestMapping(value = "/moveup")
+	public String moveup(String data) {
 		int thisId = Integer.parseInt(data.split(":")[0]);
 		int otherId = Integer.parseInt(data.split(":")[1]);
 		Titem thisItem = (Titem) service.findObject(Titem.class, thisId);
 		Titem otherItem = (Titem) service.findObject(Titem.class, otherId);
-		String thisContent=thisItem.getDatabox().getContent();
-		String otherContent=otherItem.getDatabox().getContent();
-		thisItem.getDatabox().setContent(otherContent);
-		otherItem.getDatabox().setContent(thisContent);
-		//如果是两个临近的替换,替换文本内容即可
-		if(data.split(":").length==2){
-			String otherTitle = otherItem.getTitle();
-			String thisTitle = thisItem.getTitle();
-			thisItem.setTitle(otherTitle);
-			otherItem.setTitle(thisTitle);
-		}
-		//如果是跨子类替换，需要替换oid
-		else if (data.split(":").length==4) {
-			int thisOid = Integer.parseInt(data.split(":")[2]);
-			int otherOid = Integer.parseInt(data.split(":")[3]);
-			thisItem.setOid(otherOid);
-			otherItem.setOid(thisOid);
-		}
-		
+		int thisOid=thisItem.getOid();
+		int otherOid=otherItem.getOid();
+		thisItem.setOid(otherOid);
+		otherItem.setOid(thisOid);
 		service.saveOrUpdate(thisItem);
 		service.saveOrUpdate(otherItem);
 		return "success";
@@ -151,6 +140,7 @@ public class IndexController {
 		int oid = Integer.parseInt(data.split(":")[1]);
 		Titem item = (Titem) service.findObject(Titem.class, id);
 		item.setOid(oid);
+		service.saveOrUpdate(item);
 		return "success";
 	}
 

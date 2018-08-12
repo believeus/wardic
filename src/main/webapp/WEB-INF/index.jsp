@@ -12,11 +12,31 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <link rel="shortcut icon" href="/favicon.ico">
  <base href="<%=basePath%>">
  <title>编程攻略</title>
+ <script>
+ var browser =navigator.userAgent;
+  //是IE浏览器，就跳转页面
+  if(browser.indexOf("compatible")!=-1){
+	window.location.href="ieHell.jhtml";
+  }
+</script>
  <script src="static/js/jquery-3.3.1.min.js"></script>
   <script src="static/editor/wangEditor.js"></script>
+
  <script>
  $(function() {
-
+	 var vhandle=document.getElementById("vhandle");
+	 vhandle.onmousedown=function (e) {
+	     var box=document.getElementById("menubox");
+	     document.onmousemove=function (e) {
+	         box.style.cursor="e-resize";
+	         box.style.width=e.clientX+"px";
+	         var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
+	         $("#message").css("width",w);
+	     };
+	     document.onmouseup=function (e) {
+	         document.onmousemove=null;
+	     };
+	 };
 	//隐藏浏览器滚动条
 	 document.body.parentNode.style.overflowY = "hidden";
 	//创建网页编辑器
@@ -34,7 +54,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 //绑定元素执行完毕后自动移除事件，可以方法仅触发一次的事件。
 	
 	 var isMove=true;
-	 $("div[name=category]").on("click", "div[name=subChild]",function(event) {
+	 $("body").on("click", "div[name=subChild]",function(event) {
 		isMove==true?
 		(
 			$("#menubox").animate({width:300},1500),
@@ -42,81 +62,49 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		 ):(isMove=false);
 		
 	 });
-     $("div[name=category]").on("click mouseover", "div[name=item]>div",function(event) {
-             switch (event.type) {
-             	case "mouseover":
-	                 if($(this).attr("contenteditable")=="true"){
-	                	 $(this).css("cursor","text");
-	                  }
-	                 else{$(this).css("cursor","pointer");}
-                 break;
-             	
-             	break;
-                 case "click":
-                	 //begin:如果没有子项目，发送ajax请求，如果有子项，可折叠
-                	 if($(this).attr("name")=="subItem"){
-                		
-                		 if($(this).attr("hasChild")=="true"){
-                			 $("div[pid="+$(this).attr("id")+"]").each(function(){
-                    			 if($(this).css("display")=="none"){
-                    				 $(this).slideDown();
-                    			 }else{
-                            		 $(this).slideUp();
-                            	 }
-                    		 });
-                		 }else{
-                			 var item={};
-                    		 item.id=$(this).attr("id");
-                    		 var oThis=$(this);
-                    		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
-                    			 var jsonData = $.parseJSON(data);
-                    			 //因为是根据oid从小到大的顺序发送到ajax的
-                    			 //而oThis.after是每次都在oThis之后插入的
-                    			 //所以要逆过来编译sonData.length-1 到0
-                    			 //才能保证oid的正确顺序
-                    			 for(var i=jsonData.length-1;i>=0;i--){
-    								var div="<div name='subChild' id='"+jsonData[i].id+"' oid='"+jsonData[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #f1f1f1;width: 75%;' contenteditable='false'>"+jsonData[i].title+"</div>";
-                    				oThis.after(div);
-                    			 }
-                    			 oThis.attr("hasChild","true");
-                    		 });
-                		 }
-                		//end:如果没有子项目，发送ajax请求，如果有子项，可折叠
-                		
-                	 }
-                	 
-                	 $("#content").animate({scrollTop:0},300);
-                	 editor.$textElem.attr('contenteditable', true);
-                	 $("div[name=item]>div").css("color","").removeAttr("click");
-                	 $(this).attr("click","on");
-                	 $(this).css("color","white");
-                	 var id=$(this).attr("id");
-                	 var data={};
-                	 data.id=id;
-                	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-                		 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
-                		 editor.txt.html(msg);
-                	 });
-                	 break;
-
-             }
-
-         }
-
-     ).css("cursor","pointer");
-
-     $("div[name=category]").on("click","div[name=indexItem]",function(e){
-         switch (e.type) {
-            //折叠
-             case "click":
-            	var obj=$(this).parent().next();
-                if(obj.css("display")=="none"){obj.slideDown();}
-                else{obj.slideUp();}
-            	
-            	 
-             break;
-         };
+	 /*Begin:展开子目录*/
+     $("html").on("click","div[name=subItem]",function(){
+    	if($(this).attr("hasChild")=="true"){
+ 			 $($(this).next().children()).each(function(){
+     			 if($(this).css("display")=="none"){
+     				 $(this).slideDown();
+     			 }else{
+             		 $(this).slideUp();
+             	 }
+     		 });
+    	}else{
+  			 var item={};
+      		 item.id=$(this).attr("id");
+      		 var oThis=$(this);
+      		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
+      			 var data = $.parseJSON(data);
+      			 for(var i=0;i<data.length;i++){
+					var div="<div name='subChild' id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
+      				oThis.next().append(div);
+      			 }
+      			 oThis.attr("hasChild","true");
+      		 });
+    	}
      });
+     /*End:展开子目录*/
+     /*Begin:点击菜单获取数据*/
+     $("html").on("click","div[name=subChild]",function(){
+    	 /*begin:编辑状态点击无效*/
+    	 if($(this).attr("contenteditable")=="true"){return;}
+    	 /*end:编辑状态点击无效*/
+     	 $("#content").animate({scrollTop:0},300);
+     	 editor.$textElem.attr('contenteditable', false);
+     	 $(this).parents("div[name=menubox]").find("div[name=subChild]").css("color","").removeAttr("click");
+     	 $(this).css("background-color","#1b3749").attr("click","on");
+     	 $(this).css("color","white");
+     	 var id=$(this).attr("id");
+     	 var data={};
+     	 data.id=id;
+     	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+     		 editor.txt.html(msg);
+     	 });
+     });
+     /*end:点击菜单获取数据*/
    
  });
 
@@ -144,22 +132,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;border-bottom: 1px solid grey;">编程大典</div>
 		<!-- begin:menu -->
 	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
-		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
+		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;cursor: pointer;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
 		      <div style="height: 25px;">
 		       <div style="height: 18px;width: 2px;background-color: white;float: left;position: relative;left: 20px;"></div>
-		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
+		       <div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 22px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
 		      </div>
 		      <div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width: 95%;">
 		       <c:forEach var="child" items="${item.child}">
 		       		
-			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: text; color: white;;font-size: 15px;width: 75%;" contenteditable="false" >
+			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 75%;" contenteditable="false" >
 				       <c:if test="${fn:length(child.child)!=0}">
 				    	 <div id="ex" style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
 				    	</c:if>	
 				    	${child.title}
 			        </div>
+			        <div id="subChild"></div>
 		       </c:forEach>	
 			       
 		      </div>
@@ -183,22 +172,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  	
  </div>
 </div>
-<script>
-var vhandle=document.getElementById("vhandle");
-vhandle.onmousedown=function (e) {
-    var box=document.getElementById("menubox");
-    document.onmousemove=function (e) {
-        box.style.cursor="n-resize";
-        box.style.width=e.clientX+"px";
-        var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
-        $("#message").css("width",w);
-    };
-    document.onmouseup=function (e) {
-        document.onmousemove=null;
-    };
-};
 
-</script>
 </body>
 
 </html>

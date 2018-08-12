@@ -63,7 +63,8 @@ public class Titem {
 		return child;
 	}
 	
-	@OneToOne(mappedBy="item",fetch=FetchType.LAZY)
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="fk_boxId",unique=true) //会在Iitem表上创建一个fk_boxId列
 	public Tdata getDatabox() {
 		return databox;
 	}
