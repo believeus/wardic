@@ -1,6 +1,8 @@
 package cn.believeus.controller;
 
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -156,6 +158,11 @@ public class IndexController {
 	public String delItem(int id) {
 		service.delete(Titem.class, id);
 		return "success";
-
+	}
+	@ResponseBody
+	@RequestMapping(value = "/gettime")
+	public String getDate(){
+		String time = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()); 
+		return time;
 	}
 }

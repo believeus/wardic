@@ -574,7 +574,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		    	<!-- 编程攻略是一家Java培训机构，旨在培养全栈IT软件！我们认为IT培训的好坏的首要核心在于管理，以学生利益为中心 -->
 		    </div>
 	    </div>
-	    <div style="height: 35px;width: 100%;background-color: #f1f1f1;font-weight: bold;text-align: center;line-height: 35px;">不常在线:V聊15295432682</div>
+	    <div id="time" style="height: 35px;width: 100%;background-color: #f1f1f1;font-weight: bold;text-align: center;line-height: 35px;"></div>
 	</div>
  	
  </div>
@@ -582,5 +582,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div>
 
 </body>
-
+<script>
+	window.setInterval(function(){
+		  $.post("<%=basePath%>gettime.jhtml",function(msg){
+        	 $("#time").text(msg);
+          }); 
+	},1000);
+</script>
 </html>
