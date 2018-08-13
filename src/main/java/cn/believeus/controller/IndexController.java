@@ -105,18 +105,23 @@ public class IndexController {
 
 	@ResponseBody
 	@RequestMapping(value = "/save")
-	public String saveItem(Titem item) {
-		int pid = item.getPid();
-		// 保存子项
-		if (pid != 0) {
-			Titem pItem = (Titem) service.findObject(Titem.class, pid);
-			item.setParent(pItem);
+	public String saveItem(Titem im) {
+		//更新菜单
+		if(im.getId()!=0){
+			Titem pItem = (Titem) service.findObject(Titem.class, im.getId());
+			pItem.setTitle(im.getTitle());
+			service.saveOrUpdate(pItem);
+		//新创建一个子item
+		}else {
+			if(im.getPid()!=0){
+				Titem pItem = (Titem) service.findObject(Titem.class, im.getPid());
+				im.setParent(pItem);
+			}
+			im.setDatabox(new Tdata("<h1>请输入文章内容……</h1>"));
+			service.saveOrUpdate(im);
 		}
-		if(item.getId()==0){
-			item.setDatabox(new Tdata("<h1>请输入文章内容……</h1>"));
-		}
-		service.saveOrUpdate(item);
-		return "success:" + item.getId();
+		
+		return "success:" + im.getId();
 	}
 
 	@ResponseBody
