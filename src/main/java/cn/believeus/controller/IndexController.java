@@ -112,7 +112,9 @@ public class IndexController {
 			Titem pItem = (Titem) service.findObject(Titem.class, pid);
 			item.setParent(pItem);
 		}
-		item.setDatabox(new Tdata("<h1>请输入文章内容……</h1>"));
+		if(item.getId()==0){
+			item.setDatabox(new Tdata("<h1>请输入文章内容……</h1>"));
+		}
 		service.saveOrUpdate(item);
 		return "success:" + item.getId();
 	}
