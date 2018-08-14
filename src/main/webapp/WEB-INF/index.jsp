@@ -57,8 +57,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 $("body").on("click", "div[name=subChild]",function(event) {
 		isMove==true?
 		(
-			$("#menubox").animate({width:300},1500),
-			$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000)
+			$("#menubox").animate({width:100},1500),
+			$("#message").animate({width:$(document).width()-100-$("#vhandle").width()},1000)
 		 ):(isMove=false);
 		
 	 });
