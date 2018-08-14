@@ -24,6 +24,17 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
  <script>
  $(function() {
+	 //当浏览器大小被拉伸时,重新执行vresize方法
+	 var vresize=function(){
+			var height=$(document).height();
+	 		$("#container").css("height",height);
+	 		$("#vhandle").css("height",height);
+	 		$("#category").css("height",(height-35-100));
+	 		$("#message").css("height",height);
+	 };
+	vresize();
+	$(window).resize(vresize);
+	 //拖拉效果
 	 var vhandle=document.getElementById("vhandle");
 	 vhandle.onmousedown=function (e) {
 	     var box=document.getElementById("menubox");
@@ -46,7 +57,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 editor.create();
 	 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
 	
-     $('body').on("contextmenu", function() {
+	 //禁用默认的右键菜单,当点击body是自定义菜单消失
+     $("body").on("contextmenu", function() {
          return false;
      }).click(function() {
          $("div[name=menu]").hide();
@@ -57,8 +69,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 $("body").on("click", "div[name=subChild]",function(event) {
 		isMove==true?
 		(
-			$("#menubox").animate({width:100},1500),
-			$("#message").animate({width:$(document).width()-100-$("#vhandle").width()},1000)
+			$("#menubox").animate({width:300},1500),
+			$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000)
 		 ):(isMove=false);
 		
 	 });
@@ -111,16 +123,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  
  </script>
  <!-- 设置导航的高度 -->
- <script>
- 	$(function(){
- 		var height=$(document).height();
- 		$("#container").css("height",height);
- 		$("#vhandle").css("height",height);
- 		$("#category").css("height",(height-35-100));
- 		$("#message").css("height",height);
- 	});
- 	
-</script>
+
 
 </head>
 
