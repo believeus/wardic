@@ -63,7 +63,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
          $("div[name=menu]").hide();
      });
 	 /*Begin:展开子目录*/
-     $("html").on("click","div[name=subItem]",function(){
+     $("body").on("click","div[name=subItem]",function(){
     	if($(this).attr("hasChild")=="true"){
  			 $($(this).next().children()).each(function(){
      			 if($(this).css("display")=="none"){
@@ -89,7 +89,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*End:展开子目录*/
      
      /*Begin:点击菜单获取数据*/
-     $("html").on("click","div[name=subChild]",function(){
+     $("body").on("click","div[name=subChild]",function(){
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -108,7 +108,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*end:点击菜单获取数据*/
      
      /*Begin:双击进入编辑模式*/
-     $("html").on("dblclick","div[name=subChild]",function(){
+     $("body").on("dblclick","div[name=subChild]",function(){
          if($(this).attr("contenteditable")=="false"){
         	$(this).attr("contenteditable", true);
          	$(this).css("border","1px solid grey");
@@ -121,7 +121,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*end:双击进入编辑模式*/
      
      /*begin:敲enter键,将修改的代码保存到服务器中*/
-      $("html").on("keydown","div[name=subChild]",function(event){
+      $("body").on("keydown","div[name=subChild]",function(event){
     	  //非编辑状态enter键无效
     	  if($(this).attr("contenteditable")=="false"){return;}
     	  if(event.which == "13"){ //enter键的键值为13
@@ -238,7 +238,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       
      });
      /*Begin:点击第一父节点会展开或收缩*/
-     $("html").on("click","div[name=indexItem]",function(e){
+     $("body").on("click","div[name=indexItem]",function(e){
     	var obj=$(this).parent().next();
         if(obj.css("display")=="none"){
         	obj.slideDown();
@@ -249,7 +249,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*End:点击第一父节点会展开或收缩*/
      
      /*Begin:按enter键保存数据*/
-     $("html").on("keydown","div[name=indexItem]",function(event){
+     $("body").on("keydown","div[name=indexItem]",function(event){
     	//非编辑状态enter键无效
    	  	if($(this).attr("contenteditable")=="false"){return;}
     	if(event.which == "13"){
@@ -287,7 +287,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*End:按enter键保存数据*/
      
      /*Begin:给div[name=subItem]添加keydown事件*/
-     $("html").on("keydown","div[name=subItem]",function(event){
+     $("body").on("keydown","div[name=subItem]",function(event){
     	//非编辑状态enter键无效
     	if($(this).attr("contenteditable")=="false"){return;}
      	if(event.which == "13"){
@@ -327,7 +327,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      
       
      /*Begin:双击进入编辑模式*/
-      $("html").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
+      $("body").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
     	  var isEdit=$(this).attr("contenteditable");
           if(isEdit=="false"){
         	  $(this).attr("contenteditable", true);
