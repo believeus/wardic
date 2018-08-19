@@ -1462,7 +1462,8 @@ Link.prototype = {
             checkResult = linkCheck(text, link);
         }
         if (checkResult === true) {
-            editor.cmd.do('insertHTML', '<a href="' + link + '" target="_blank">' + text + '</a>');
+        	/*Begin wuqiwei 2018-8-18 当点击该标签时,将信息输出到index.jsp页面的main-iframe中*/
+            editor.cmd.do('insertHTML', '<a href="javascript:void(0)" link='+link+'  target="">' + text + '</a>');
         } else {
             alert(checkResult);
         }

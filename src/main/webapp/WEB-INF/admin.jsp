@@ -79,7 +79,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
       			 var data = $.parseJSON(data);
       			 for(var i=0;i<data.length;i++){
-					var div="<div name='subChild' id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #2d3e50;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
+					var div="<div name='subChild' data='["+data[i].title+"]findData.jhtml?id="+data[i].id+"' id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #2d3e50;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
       				oThis.next().append(div);
       			 }
       			 oThis.attr("hasChild","true");
@@ -551,6 +551,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 				    	 <div style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
 				    	</c:if>	
 				    	${child.title}
+				    	
 			        </div>
 			        <div id="box" style="width:100%;"></div>
 			    </div>

@@ -34,12 +34,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 };
 	vresize();
 	$(window).resize(vresize);
-	 //拖拉效果
+	 //左右拖拉效果
 	 var vhandle=document.getElementById("vhandle");
 	 vhandle.onmousedown=function (e) {
 	     var box=document.getElementById("menubox");
 	     document.onmousemove=function (e) {
-	         box.style.cursor="e-resize";
 	         box.style.width=e.clientX+"px";
 	         var w=$("html").width()-$("#menubox").width()-$("#vhandle").width();
 	         $("#message").css("width",w);
@@ -48,15 +47,42 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	         document.onmousemove=null;
 	     };
 	 };
+	//上下拖拉效果
+	 var hhandle=document.getElementById("hhandle");
+	 hhandle.onmousedown=function (e) {
+	    var box=document.getElementById("downbox");
+	    document.onmousemove=function (e) {
+	        box.style.height=e.clientY+"px";
+	        var h=$("body").height()-$("#downbox").height()-$("#hhandle").height();
+	        $("#databox").css("height",h);
+	    };
+	    document.onmouseup=function (e) {
+	        document.onmousemove=null;
+	    };
+	 };
+	 
 	//隐藏浏览器滚动条
 	 document.body.parentNode.style.overflowY = "hidden";
 	//创建网页编辑器
-	 var E = window.wangEditor;
-	 var editor = new E("#menu","#editor");
+	 var editor = new window.wangEditor("#menu","#editor");
 	 editor.customConfig.menus = [];
 	 editor.create();
 	 editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
+	 
+	 var boxEd = new window.wangEditor("#downMenu","#downEd");
+	 boxEd.customConfig.menus = [];
+	 boxEd.create();
+	 boxEd.$textElem.attr('contenteditable', false);//默认关闭编辑器
 	
+	 //当点击编辑器中的a标签的时候,将上窗口显示出来
+	 $("body").on("click","div[id=editor] a",function(){
+		 var link=$(this).attr("link");
+		 $.post(link,function(msg){
+			 $("#downbox").animate({height:300},300);
+			 $("#databox").animate({height:$(document).height()-300-$("#hhandle").height()},1000);
+			 boxEd.txt.html(msg);
+     	 });
+	 });
 	 //禁用默认的右键菜单,当点击body是自定义菜单消失
      $("body").on("contextmenu", function() {
          return false;
@@ -75,7 +101,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		
 	 });
 	 /*Begin:展开子目录*/
-     $("html").on("click","div[name=subItem]",function(){
+     $("body").on("click","div[name=subItem]",function(){
     	if($(this).attr("hasChild")=="true"){
  			 $($(this).next().children()).each(function(){
      			 if($(this).css("display")=="none"){
@@ -91,7 +117,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
       			 var data = $.parseJSON(data);
       			 for(var i=0;i<data.length;i++){
-					var div="<div name='subChild' id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
+					var div="<div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
       				oThis.next().append(div);
       			 }
       			 oThis.attr("hasChild","true");
@@ -100,7 +126,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      });
      /*End:展开子目录*/
      /*Begin:点击菜单获取数据*/
-     $("html").on("click","div[name=subChild]",function(){
+     $("body").on("click","div[name=subChild]",function(){
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -166,16 +192,22 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:save -->
 	</div>
  	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #ccc;height: 10px;cursor: e-resize;"></div>
- 	<div id="message" style="float: left;height: 0px;overflow-x:hidden;width: 9.5%;">
-	    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
-		<div id="editor" style="width: 100%;height: 380px;">
-			<div style="font-size: 20px;font-weight: bold;color: #1b3749;"></div>
+ 	<div id="message" style="float: left;width: 9.5%;height: 0px;">
+		<div id="downbox"  style="width: 100%;overflow-x:hidden;height: 0px;overflow-x:hidden;">
+			<div id="downMenu" style="width: 100%;height: 30px;"></div>
+			<div id="downEd" style="width: 100%;height: 300px;"></div>
 		</div>
-	</div>
- 	
+		<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
+	 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 99.5%;">
+		    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
+			<div id="editor" style="width: 100%;height: 380px;">
+				<div style="font-size: 20px;font-weight: bold;color: #1b3749;"></div>
+			</div>
+		</div>
+		
+ 	</div>
  </div>
 </div>
-
 </body>
 
 </html>
