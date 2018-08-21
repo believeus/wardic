@@ -91,7 +91,16 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      });
 	 //绑定元素执行完毕后自动移除事件，可以方法仅触发一次的事件。
 	
-	 
+	 /*Begin:点击第一父节点会展开或收缩*/
+     $("body").on("click","div[name=indexItem]",function(e){
+    	var obj=$(this).parent().next();
+        if(obj.css("display")=="none"){
+        	obj.slideDown(300);
+        }else{
+        	obj.slideUp(300);
+        }
+     });
+     /*End:点击第一父节点会展开或收缩*/
 	 /*Begin:展开子目录*/
      $("body").on("click","div[name=subItem]",function(){
     	if($(this).attr("hasChild")=="true"){
@@ -125,7 +134,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     	 /*end:编辑状态点击无效*/
      	 $("#content").animate({scrollTop:0},300);
      	 editor.$textElem.attr('contenteditable', false);
-     	 $(this).parents("div[name=menubox]").find("div[name=subChild]").css("color","").removeAttr("click");
+     	 console.info($("div[name=menubox]"));
+     	 $("div[name=subChild]").css("color","#ccc").removeAttr("click");
      	 $(this).css("background-color","#1b3749").attr("click","on");
      	 $(this).css("color","white");
      	 var id=$(this).attr("id");
@@ -133,7 +143,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 data.id=id;
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
      		editor.txt.html(msg);
-     		//第一次点击目录,回收目录页
+     			//第一次点击目录,回收目录页
      		if(isMove==true){
      			$("#menubox").animate({width:300},1000);
  				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
@@ -156,7 +166,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <div id="container" style="width: 100%;height: 100%;">
  <div style="width: 100%;height: auto;">
-	<div id="menubox" style="width: 90%;float: left;">
+	<div name="menubox" id="menubox" style="width: 90%;float: left;">
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;border-bottom: 1px solid grey;">编程大典</div>
 		<!-- begin:menu -->
 	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
