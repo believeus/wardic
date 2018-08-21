@@ -91,15 +91,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      });
 	 //绑定元素执行完毕后自动移除事件，可以方法仅触发一次的事件。
 	
-	 var isMove=true;
-	 $("body").on("click", "div[name=subChild]",function(event) {
-		isMove==true?
-		(
-			$("#menubox").animate({width:300},1500),
-			$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000)
-		 ):(isMove=false);
-		
-	 });
+	 
 	 /*Begin:展开子目录*/
      $("body").on("click","div[name=subItem]",function(){
     	if($(this).attr("hasChild")=="true"){
@@ -126,6 +118,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      });
      /*End:展开子目录*/
      /*Begin:点击菜单获取数据*/
+     var isMove=true;
      $("body").on("click","div[name=subChild]",function(){
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
@@ -139,7 +132,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 var data={};
      	 data.id=id;
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-     		 editor.txt.html(msg);
+     		editor.txt.html(msg);
+     		//第一次点击目录,回收目录页
+     		if(isMove==true){
+     			$("#menubox").animate({width:300},1000);
+ 				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
+ 				isMove=false;
+     		}
      	 });
      });
      /*end:点击菜单获取数据*/
