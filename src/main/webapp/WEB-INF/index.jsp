@@ -100,6 +100,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
         	obj.slideUp(300);
         }
      });
+	 
      /*End:点击第一父节点会展开或收缩*/
 	 /*Begin:展开子目录*/
      $("body").on("click","div[name=subItem]",function(){
@@ -141,6 +142,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 var id=$(this).attr("id");
      	 var data={};
      	 data.id=id;
+     	 var oThis=$(this);
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
      		editor.txt.html(msg);
      			//第一次点击目录,回收目录页
@@ -148,10 +150,28 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      			$("#menubox").animate({width:300},1000);
  				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
  				isMove=false;
+ 				oThis.parents("div[name=divItem]").siblings().slideUp();
+ 				oThis.parents("div[id=subChild]").siblings().slideUp();
+ 				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      		}
      	 });
      });
      /*end:点击菜单获取数据*/
+     
+     
+     $("body").on("click","input[name=showindex]",function(){
+    	 $("div[name=divItem]").slideDown();
+    	 if($(this).attr("menu")=="all"){
+    		 $(this).val("显示[当前]目录");
+    		 $(this).attr("menu","part");
+    	 }else if($(this).attr("menu")=="part"){
+    		 $(this).val("显示[所有]目录");
+    		 $(this).attr("menu","all");
+    		 $("div[click=on]").parents("div[name=divItem]").siblings().slideUp();
+    		 $("div[click=on]").parents("div[id=subChild]").siblings().slideUp();
+    	 };
+    	 
+     });
    
  });
 
@@ -167,9 +187,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <div id="container" style="width: 100%;height: 100%;">
  <div style="width: 100%;height: auto;">
 	<div name="menubox" id="menubox" style="width: 90%;float: left;">
-		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;border-bottom: 1px solid grey;">编程大典</div>
+		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;">编程大典</div>
 		<!-- begin:menu -->
-	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom:1px solid grey;border-top: 1px solid grey; " id="category" name="category">
+		<input  type="button" name="showindex" style="height: 20px;font-weight: bold;color:white;cursor: pointer;width:100%;border:1px solid grey;text-align: center;background-color: #1b3749;line-height: 20px;"  onmouseover="this.style.cursor='pointer'"></input>
+	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey; " id="category" name="category">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;cursor: pointer;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
