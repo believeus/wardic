@@ -29,7 +29,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			var height=$(document).height();
 	 		$("#container").css("height",height);
 	 		$("#vhandle").css("height",height);
-	 		$("#category").css("height",(height-35-100));
+	 		$("#category").css("height",(height-35-100-20));
 	 		$("#message").css("height",height);
 	 };
 	vresize();
@@ -160,15 +160,15 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      
      
      $("body").on("click","input[name=showindex]",function(){
-    	 $("div[name=divItem]").slideDown();
     	 if($(this).attr("menu")=="all"){
+    		 $("div[click=on]").parents("div[name=divItem]").siblings().slideDown().find("div[name=item]").slideUp();
     		 $(this).val("显示[当前]目录");
     		 $(this).attr("menu","part");
     	 }else if($(this).attr("menu")=="part"){
     		 $(this).val("显示[所有]目录");
     		 $(this).attr("menu","all");
     		 $("div[click=on]").parents("div[name=divItem]").siblings().slideUp();
-    		 $("div[click=on]").parents("div[id=subChild]").siblings().slideUp();
+    		// $("div[click=on]").parents("div[id=subChild]").siblings().slideUp();
     	 };
     	 
      });
