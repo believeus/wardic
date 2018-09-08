@@ -135,7 +135,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     	 /*end:编辑状态点击无效*/
      	 $("#content").animate({scrollTop:0},300);
      	 editor.$textElem.attr('contenteditable', false);
-     	 console.info($("div[name=menubox]"));
      	 $("div[name=subChild]").css("color","#ccc").removeAttr("click");
      	 $(this).css("background-color","#1b3749").attr("click","on");
      	 $(this).css("color","white");
@@ -151,7 +150,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
  				isMove=false;
  				oThis.parents("div[name=divItem]").siblings().slideUp();
- 				oThis.parents("div[id=subChild]").siblings().slideUp();
+ 				//oThis.parents("div[id=subChild]").slideDown();
  				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      		}
      	 });
@@ -190,7 +189,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;">编程大典</div>
 		<!-- begin:menu -->
 		<input  type="button" name="showindex" style="height: 20px;font-weight: bold;color:white;cursor: pointer;width:100%;border:1px solid grey;text-align: center;background-color: #1b3749;line-height: 20px;"  onmouseover="this.style.cursor='pointer'"></input>
-	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey; " id="category" name="category">
+	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom: 1px solid grey; " id="category" name="category">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;cursor: pointer;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
