@@ -35,7 +35,7 @@ public class IndexController {
 	@RequestMapping("/index")
 	public ModelAndView index(@RequestParam(required=false) String login) {
 		ModelAndView modelView = new ModelAndView();
-		if("believeus".equals(login)){
+		if("doit".equals(login)){
 			modelView.setViewName("/WEB-INF/admin.jsp");
 		}else {
 			modelView.setViewName("/WEB-INF/index.jsp");
