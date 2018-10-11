@@ -185,8 +185,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <div id="container" style="width: 100%;height: 100%;">
  <div style="width: 100%;height: auto;">
-	<div name="menubox" id="menubox" style="width: 90%;float: left;">
-		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;">编程大典</div>
+	<div name="menubox" id="menubox" style="width: 60%;float: left;">
+		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;cursor: pointer;" onclick="location.href='/';">编程大典</div>
 		<!-- begin:menu -->
 		<input  type="button" name="showindex" style="height: 20px;font-weight: bold;color:white;cursor: pointer;width:100%;border:1px solid grey;text-align: center;background-color: #1b3749;line-height: 20px;"  onmouseover="this.style.cursor='pointer'"></input>
 	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom: 1px solid grey; " id="category" name="category">
@@ -216,12 +216,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
 	 	<div>
-	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >不常在线:微信聊15295432682</div>
+	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >联系作者(微信:15295432682)</div>
 	 	</div>
 	 	<!-- end:save -->
 	</div>
  	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #ccc;height: 10px;cursor: e-resize;"></div>
- 	<div id="message" style="float: left;width: 9.5%;height: 0px;">
+ 	<div id="message" style="float: left;width: 39.5%;height: 0px;">
 		<div id="downbox"  style="width: 100%;overflow-x:hidden;height: 0px;overflow-x:hidden;">
 			<div id="downMenu" style="width: 100%;height: 30px;"></div>
 			<div id="downEd" style="width: 100%;height: 300px;"></div>
@@ -230,7 +230,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 99.5%;">
 		    <div id="menu" style="width: 100%;border:1px solid grey;"></div>
 			<div id="editor" style="width: 100%;height: 380px;">
-				<div style="font-size: 20px;font-weight: bold;color: #1b3749;"></div>
+				<div style="font-size: 20px;font-weight: bold;color: #1b3749;">
+					<img alt="编程大典" src="static/images/weix.jpg" width="100%;"/>
+				</div>
 			</div>
 		</div>
 		
