@@ -7,11 +7,11 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
 <!DOCTYPE html>
 <head>
- <meta name="keywords" content="编程攻略 java培训 高等数学 java编程 java教程" />
- <meta name="description" content="编程攻略是集IT技术原创分享和经验分享的一个IT知识综合型网站" />
+ <meta name="keywords" content="编程大典 java培训 高等数学 java编程 java教程 IT技术"  />
+ <meta name="description" content="编程大典是集IT技术原创分享和经验分享的一个IT知识综合型网站" />
  <link rel="shortcut icon" href="/favicon.ico">
  <base href="<%=basePath%>">
- <title>编程攻略</title>
+ <title>编程大典</title>
  <script>
  var browser =navigator.userAgent;
   //是IE浏览器，就跳转页面
@@ -93,12 +93,32 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	
 	 /*Begin:点击第一父节点会展开或收缩*/
      $("body").on("click","div[name=indexItem]",function(e){
-    	var obj=$(this).parent().next();
-        if(obj.css("display")=="none"){
-        	obj.slideDown(300);
-        }else{
-        	obj.slideUp(300);
-        }
+    	var oThis=$(this);
+    	 var obj=$(this).parent().next();
+    	if(oThis.attr("hasChild")=="true"){
+    		 if(obj.css("display")=="none"){
+    			 obj.slideDown(500);
+       		 }else{
+       			obj.slideUp(500);
+       		 }
+    	}else{
+        	var data={};
+        	data.id=$(this).attr("id");
+        	$.post("findItem.jhtml",data,function(data){
+        		 var data = $.parseJSON(data);
+        		 if(data.length>0){
+        			 oThis.attr("hasChild","true");
+        			 for(var i=0;i<data.length;i++){
+     			        var div="<div id="+data[i].id+" pid="+oThis.attr('id')+"  hasChild='false'  oid="+data[i].oid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false' >"+ data[i].title+"</div><div id='subChild'></div>";
+     			        obj.append(div);
+       			 	} ;
+        		}else{
+        			oThis.attr("hasChild","false");
+        		};
+      			 
+        	});
+    	}
+    	
      });
 	 
      /*End:点击第一父节点会展开或收缩*/
@@ -116,11 +136,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
   			 var item={};
       		 item.id=$(this).attr("id");
       		 var oThis=$(this);
+      		 console.info(oThis);
+      		
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
       			 var data = $.parseJSON(data);
       			 for(var i=0;i<data.length;i++){
 					var div="<div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
-      				oThis.next().append(div);
+					//oThis.children("div[id=subChild]").append(div);
+					oThis.next().append(div);
       			 }
       			 oThis.attr("hasChild","true");
       		 });
@@ -199,14 +222,14 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		      </div>
 		      <div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width: 95%;">
 		       <c:forEach var="child" items="${item.child}">
-		       		
+		       		<%-- 
 			        <div id="${child.id}" pid="${item.id }"  hasChild='false'  oid="${child.oid}" name="subItem" style="height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;" contenteditable="false" >
 				       <c:if test="${fn:length(child.child)!=0}">
 				    	 <div id="ex" style="border:1px solid grey;font-size: 12px;float: left;height: 10px;position: relative;top: 5px;line-height: 8px;width: 9px;">+</div>
 				    	</c:if>	
 				    	${child.title}
-			        </div>
-			        <div id="subChild"></div>
+			        </div> 
+			        <div id="subChild"></div>--%>
 		       </c:forEach>	
 			       
 		      </div>
