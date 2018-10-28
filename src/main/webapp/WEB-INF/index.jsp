@@ -6,6 +6,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 %>
 <%@ taglib prefix="c"  uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%> 
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %>
+
 <!DOCTYPE html>
 <head>
  <link rel="shortcut icon" href="/favicon.ico">
@@ -24,7 +26,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <script>
 
  $(function() {
-	 <c:if test="${sessionuser!=null}">
+	 <shiro:hasPermission name="user:save"> 
 	 //使用ctrl+s保存文章
 	 $(document).keydown(function(e){
 		   if( e.ctrlKey  == true && e.keyCode == 83 ){
@@ -34,7 +36,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		      return false; // 截取返回false就不会保存网页了
 		   }
 		});
-	 </c:if>
+	 </shiro:hasPermission>
 	//隐藏浏览器滚动条
 	 document.body.parentNode.style.overflowY = "hidden";
 	//创建网页编辑器
@@ -80,13 +82,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 data.id=id;
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
      		 editor.txt.html(msg);
-     		<c:if test="${sessionuser!=null}">
+     		<shiro:hasPermission name="user:editArticle"> 
      		 editor.$textElem.attr('contenteditable', true);
-     		 </c:if>
+     		</shiro:hasPermission>
      	 });
      });
      /*end:点击菜单获取数据*/
-     <c:if test="${sessionuser!=null}">
+     <shiro:hasPermission name="user:editMenu"> 
      /*Begin:双击进入编辑模式*/
      $("body").on("dblclick","div[name=subChild]",function(){
          if($(this).attr("contenteditable")=="false"){
@@ -99,8 +101,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
          editor.$textElem.attr('contenteditable', false);
      });
      /*end:双击进入编辑模式*/
-     </c:if>
-     <c:if test="${sessionuser!=null}">
      /*begin:敲enter键,将修改的代码保存到服务器中*/
       $("body").on("keydown","div[name=subChild]",function(event){
     	  //非编辑状态enter键无效
@@ -136,8 +136,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
             /*End:将修改的目录保存到数据库*/
           }
       });
-	</c:if>
-	 <c:if test="${sessionuser!=null}">
      /*Begin:给subChild添加菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=subChild]",function(e){
     	  if($(this).css("color")!="rgb(255, 255, 255)"){return;};//如果没有被选中,则禁用右键菜单
@@ -203,7 +201,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
       	});
       });
      /*End:给subChild添加菜单*/
-	 </c:if>
+	  </shiro:hasPermission>
        $("body").on("click","input[name=showindex]",function(){
     	 if($(this).attr("menu")=="all"){
     		 $("div[click=on]").parents("div[name=divItem]").siblings().slideDown().find("div[name=item]").slideUp();
@@ -215,7 +213,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     		 $("div[click=on]").parents("div[name=divItem]").siblings().slideUp();
     	 };
      });
-     <c:if test="${sessionuser!=null}">
+     <shiro:hasPermission name="user:editMenu"> 
      $("div[id=mainItem]").dblclick(function(){
     	 //获取最后一个兄弟节点
     	 var oid=$(this).parent().children("div:last-child").find("div[name=indexItem]").attr("oid");
@@ -228,9 +226,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
              	"<div name='item' style='height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width:100%;'></div>"+
              "</div>";
          $(this).parent().append(div);
-      
      });
-     </c:if>
+     </shiro:hasPermission>
+     
      /*Begin:点击第一父节点会展开或收缩*/
      $("body").on("click","div[name=indexItem]",function(e){
     	var oThis=$(this);
@@ -317,6 +315,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 });
      });
      /*end:点击菜单获取数据*/
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:按enter键保存数据*/
      $("body").on("keydown","div[name=indexItem]",function(event){
     	//非编辑状态enter键无效
@@ -354,8 +353,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     	}
      });
      /*End:按enter键保存数据*/
-     
-      <c:if test="${sessionuser!=null}">
+      </shiro:hasPermission>
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:给div[name=subItem]添加keydown事件*/
      $("body").on("keydown","div[name=subItem]",function(event){
     	//非编辑状态enter键无效
@@ -394,9 +393,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	}
      });
      /*End:给div[name=subItem]添加keydown事件*/
-     </c:if>
+      </shiro:hasPermission>
       
-     <c:if test="${sessionuser!=null}">
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:双击进入编辑模式*/
       $("body").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
     	  var isEdit=$(this).attr("contenteditable");
@@ -408,8 +407,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           }
       });
       /*End:双击进入编辑模式*/
-      </c:if>
-      <c:if test="${sessionuser!=null}">
+       </shiro:hasPermission>
+       <shiro:hasPermission name="user:editMenu">
       /*Begin:给subItem添加右键菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=subItem]",function(e){
     	  $("div[name=menu]").remove();//把原来的右键菜单删除
@@ -500,8 +499,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     	  
       });
       /*End:给subItem添加右键菜单*/
-      </c:if>
-      <c:if test="${sessionuser!=null}">
+      </shiro:hasPermission>
+      <shiro:hasPermission name="user:editMenu">
       /*Begin:给indexItem添加右键菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=indexItem]",function(e){
     	  if($(this).attr("contenteditable")=="true"){return;}
@@ -572,7 +571,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           /*End:给indexItem添加右键菜单*/
     	  
       });
-      </c:if>
+      </shiro:hasPermission>
     });
  </script>
  <!-- 设置导航的高度 -->
@@ -652,7 +651,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
 	 	<div>
-	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" ><a style="color:white; text-decoration: none;font-weight: lighter;" href="#">[注册]</a><a id="time"></a><a style="color:white; text-decoration: none;font-weight: lighter;" href="#">[登陆]</a></div>
+	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >
+	 			<form action="/login.jhtml?username=#&password=#"  method="post"><input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="欢迎光临"></form> 
+	 		</div>
 	 	</div>
 	 	<!-- end:save -->
 	</div>
@@ -679,7 +680,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 <script>
 	window.setInterval(function(){
 		  $.post("<%=basePath%>gettime.jhtml",function(msg){
-        	 $("#time").text(msg);
+        	 $("#time").val(msg);
           }); 
 	},1000);
 </script>

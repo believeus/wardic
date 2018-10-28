@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 
 import mydfs.storage.server.MydfsTrackerServer;
 
+import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +22,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import cn.believeus.model.Tdata;
 import cn.believeus.model.Titem;
-import cn.believeus.model.Tuser;
 import cn.believeus.service.MySQLService;
 
 import com.alibaba.fastjson.JSONArray;
@@ -166,18 +166,18 @@ public class IndexController {
 	@ResponseBody
 	@RequestMapping(value = "/gettime")
 	public String getDate() {
-		String time = new SimpleDateFormat("hh:mm:ss")
-				.format(new Date());
+		String time = new SimpleDateFormat("hh:mm:ss").format(new Date());
 		return time;
 	}
-	@RequestMapping(value="/login")
-	public String login(HttpSession session){
-		session.setAttribute("sessionuser", new Tuser());
+
+	@RequestMapping(value = "/login")
+	public String login() {
 		return "redirect:/";
 	}
-	@RequestMapping(value="/logout")
-	public String logout(HttpSession session){
-		session.removeAttribute("sessionuser");
+
+	@RequestMapping(value = "/logout")
+	public String logout() {
+		SecurityUtils.getSubject().logout();
 		return "redirect:/";
 	}
 }

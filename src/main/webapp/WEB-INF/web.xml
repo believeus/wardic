@@ -9,7 +9,7 @@
 		<welcome-file>index</welcome-file>
 	</welcome-file-list>
 	<!-- end Name:wuqiwei Data:2013-319 Email:1058633117@qq.com AddReason: 主页面使用index.do的请求实现MVC的效果 -->
-	
+
 	<!--Begin Name:wuqiwei Date:2010-10-3 23:06:02 AddReason:使用shiro安全框架 -->
 	<filter>
 		<filter-name>shiroFilter</filter-name>
@@ -20,7 +20,7 @@
 		</init-param>
 	</filter>
 	<!--End Name:wuqiwei Date:2010-10-3 23:06:02 AddReason:使用shiro安全框架 -->
-	
+
 	<!--Begin 这是Spring中的一个编码过滤器 设置每次请求的request请求解码的类型为UTF-8 -->
 	<filter>
 		<filter-name>charsetEncoding</filter-name>
@@ -50,10 +50,10 @@
 		</init-param>
 	</filter>
 	<!--end: 这个过滤器是用在一个页面请求时，打来Session，生成完页面生关闭Session，这样就可以解决lazy -->
-	
-	
+
+
 	<!-- 经测试filter的执行过程是按照filter-mapping的顺序决定的 ,比如说来了一个.html的请求 -->
-	
+
 	<!-- 会先被SessionUserCheckUpdate拦截,之后才会被UrlRewriteFilter拦截UrlRewriteFilter被拦截到请求 -->
 	<filter-mapping>
 		<filter-name>hibernateFilter</filter-name>
@@ -62,16 +62,16 @@
 	<!--Begin Name:wuqiwei Date:2013-10-3 23:11:24 AddReason:使用shiro对后台权限控制 -->
 	<filter-mapping>
 		<filter-name>shiroFilter</filter-name>
-		<url-pattern>/admin/*</url-pattern>
+		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 	<!--End Name:wuqiwei Date:2013-10-3 23:11:24 AddReason:使用shiro对后台权限控制 -->
-	
-	
+
+
 	<filter-mapping>
 		<filter-name>charsetEncoding</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 
 	<!-- begin:spring 配置 tomcat启动实例化 spring配置文件 -->
 	<context-param>
@@ -109,12 +109,12 @@
 		<url-pattern>/index</url-pattern>
 	</servlet-mapping>
 	<!--end Name:wuqiwei Date:2013-08-10 AddReason:添加springMVC的支持 -->
-	
+
 	<!-- Begin Author:wuqiwei:Data:2014-06-05 AddReason:内嵌式小型分布式文件系统集成 -->
-	 <servlet>
+	<servlet>
 		<servlet-name>storageClient</servlet-name>
 		<servlet-class>mydfs.storage.server.MydfsServerServlet</servlet-class>
-		<!--127.0.0.1:9999 分别是指向dfsServer服务的ip和端口  -->
+		<!--127.0.0.1:9999 分别是指向dfsServer服务的ip和端口 -->
 		<init-param>
 			<param-name>mydfsServerHost:Port</param-name>
 			<param-value>127.0.0.1:9999</param-value>
@@ -131,4 +131,8 @@
 			<taglib-location>/tag/datetag.tld</taglib-location>
 		</taglib>
 	</jsp-config>
+
+	
+
+
 </web-app>
