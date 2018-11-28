@@ -677,6 +677,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div>
 
 </body>
+<shiro:user> 
 <script>
 	window.setInterval(function(){
 		  $.post("<%=basePath%>gettime.jhtml",function(msg){
@@ -684,4 +685,5 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
           }); 
 	},1000);
 </script>
+</shiro:user>
 </html>
