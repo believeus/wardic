@@ -677,13 +677,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 </div>
 
 </body>
-<shiro:user> 
 <script>
+<shiro:authenticated> 
 	window.setInterval(function(){
 		  $.post("<%=basePath%>gettime.jhtml",function(msg){
         	 $("#time").val(msg);
           }); 
 	},1000);
+</shiro:authenticated>
 </script>
-</shiro:user>
 </html>
