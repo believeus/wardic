@@ -651,7 +651,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- begin:save -->
 	 	<div>
 	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >
-	 			<form action="/login.jhtml?username=#&password=#"  method="post"><input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="欢迎光临"></form> 
+	 			<form action="/login.jhtml?username=#&password=#"  method="post"><input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="@作者微信:15295432682"></form> 
 	 		</div>
 	 	</div>
 	 	<!-- end:save -->
@@ -663,14 +663,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<div id="downEd" style="width: 100%;height: 300px;"></div>
 		</div>
 		<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
-		 <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div>
-	 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%;">
-				<div id="editor" style="width: 100%;height: 100%;">
-					<div style="font-size: 20px;font-weight: bold;color: #1b3749;">
-							<img alt="" src="static/images/start.jpg" >
-					</div>
-				</div>
-		</div>
+			 <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div>
+		 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%;<shiro:guest> background-image: url('static/images/start.jpg');</shiro:guest>">
+					<div id="editor" style="width: 100%;height: 100%;"></div>
+			</div>
  	</div>
  </div>
 </div>
