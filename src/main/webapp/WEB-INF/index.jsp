@@ -1,4 +1,3 @@
-
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
 <%
 String path = request.getContextPath();
@@ -668,7 +667,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%;">
 				<div id="editor" style="width: 100%;height: 100%;">
 					<div style="font-size: 20px;font-weight: bold;color: #1b3749;">
-						<img alt="编程大典" src="static/images/weix.jpg" width="100%;"/>
+							<img alt="" src="static/images/start.jpg" >
 					</div>
 				</div>
 		</div>
