@@ -69,6 +69,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      
      /*Begin:点击菜单获取数据*/
      $("body").on("click","div[name=subChild]",function(){
+    	 //清空背景图片
+    	 $("div[id=databox]").css('background-image', '');
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -289,6 +291,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      /*Begin:点击菜单获取数据*/
      var isMove=true;
      $("body").on("click","div[name=subChild]",function(){
+    	
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -664,7 +667,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		</div>
 		<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
 			 <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div>
-		 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%;<shiro:guest> background-image: url('static/images/start.jpg');</shiro:guest>">
+		 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%; background-image: url('static/images/start.jpg');">
 					<div id="editor" style="width: 100%;height: 100%;"></div>
 			</div>
  	</div>
