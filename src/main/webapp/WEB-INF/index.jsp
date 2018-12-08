@@ -272,7 +272,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
      	 $("#content").animate({scrollTop:0},300);
-     	 editor.$textElem.attr('contenteditable', false);
+     	<shiro:authenticated> 
+			editor.$textElem.attr('contenteditable', true);
+		</shiro:authenticated> 
      	 $("div[name=subChild]").css("color","#ccc").removeAttr("click");
      	 $(this).css("background-color","#1b3749").attr("click","on");
      	 $(this).css("color","white");
@@ -296,9 +298,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      		}else{
      			editor.txt.html(msg);
      		}
-     		<shiro:hasPermission name="user:editArticle"> 
-		 		editor.$textElem.attr('contenteditable', true);
-		</shiro:hasPermission>
      	 });
      });
      /*end:点击菜单获取数据*/
@@ -639,7 +638,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	<!-- begin:save -->
 	 	<div>
 	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >
-	 			<form action="/login.jhtml?username=#&password=#"  method="post"><input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="@作者微信:15295432682"></form> 
+	 			<form action="/login.jhtml"  method="post">
+	 				<input type="hidden" name="username" value="">
+	 				<input type="hidden" name="password" value="">
+	 				<input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="@作者微信:15295432682"></form> 
 	 		</div>
 	 	</div>
 	 	<!-- end:save -->
