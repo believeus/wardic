@@ -66,29 +66,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
          $("div[name=menu]").hide();
      });
 	
-     
-     /*Begin:点击菜单获取数据*/
-     $("body").on("click","div[name=subChild]",function(){
-    	 //清空背景图片
-    	 $("div[id=databox]").css('background-image', '');
-    	 /*begin:编辑状态点击无效*/
-    	 if($(this).attr("contenteditable")=="true"){return;}
-    	 /*end:编辑状态点击无效*/
-     	 $("#content").animate({scrollTop:0},300);
-     	 $(this).parents("div[name=menubox]").find("div[name=subChild]").css("color","").removeAttr("click");
-     	 $(this).css("background-color","#1b3749").attr("click","on");
-     	 $(this).css("color","white");
-     	 var id=$(this).attr("id");
-     	 var data={};
-     	 data.id=id;
-     	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-     		 editor.txt.html(msg);
-     		<shiro:hasPermission name="user:editArticle"> 
-     		 editor.$textElem.attr('contenteditable', true);
-     		</shiro:hasPermission>
-     	 });
-     });
-     /*end:点击菜单获取数据*/
      <shiro:hasPermission name="user:editMenu"> 
      /*Begin:双击进入编辑模式*/
      $("body").on("dblclick","div[name=subChild]",function(){
@@ -175,7 +152,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
                                            $(this).attr("oid",i);
                                            var item={};
                                            item.data=$(this).attr("id")+":"+$(this).attr("oid");
-                                           console.info(item.data);
                                            $.post("<%=basePath%>updateOrder.jhtml",item);
                                        });
                                        oThis.remove();
@@ -305,15 +281,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 data.id=id;
      	 var oThis=$(this);
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-     		editor.txt.html(msg);
+     		//editor.txt.html(msg);
      			//第一次点击目录,回收目录页
      		if(isMove==true){
      			$("#menubox").animate({width:300},1000);
  				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
+ 				 window.setTimeout(function(){
+   					$("div[id=databox]").css('background-image', '');
+   		     		 	editor.txt.html(msg);
+   				 },1500);
  				isMove=false;
  				oThis.parents("div[name=divItem]").siblings().slideUp();
  				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
+     		}else{
+     			editor.txt.html(msg);
      		}
+     		<shiro:hasPermission name="user:editArticle"> 
+		 		editor.$textElem.attr('contenteditable', true);
+		</shiro:hasPermission>
      	 });
      });
      /*end:点击菜单获取数据*/
