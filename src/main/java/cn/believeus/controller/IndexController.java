@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 
 import mydfs.storage.server.MydfsTrackerServer;
 
@@ -88,13 +87,9 @@ public class IndexController {
 
 	@ResponseBody
 	@RequestMapping("/saveData")
-	public String saveData(String msg) {
-
+	public String saveData(String itemId,String content) {
 		Tdata tdata = new Tdata();
-		String itemId = msg.split("@")[0];
-		String content = msg.split("@")[1];
-		Titem item = (Titem) service.findObject(Titem.class,
-				Integer.parseInt(itemId));
+		Titem item = (Titem) service.findObject(Titem.class,Integer.parseInt(itemId));
 		if (item.getDatabox() != null) {
 			tdata = item.getDatabox();
 			tdata.setContent(content);

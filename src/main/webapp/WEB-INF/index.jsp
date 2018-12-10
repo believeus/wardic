@@ -30,7 +30,8 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 $(document).keydown(function(e){
 		   if( e.ctrlKey  == true && e.keyCode == 83 ){
 			   var item={};
-			    item.msg=$("div[click=on]").attr("id")+"@"+editor.txt.html();
+			    item.itemId=$("div[click=on]").attr("id");
+			    item.content=editor.txt.html();
 	 			$.post("<%=basePath%>saveData.jhtml",item);
 		      return false; // 截取返回false就不会保存网页了
 		   }
