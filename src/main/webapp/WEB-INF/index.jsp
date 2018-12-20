@@ -12,7 +12,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <link rel="shortcut icon" href="/favicon.ico">
  <base href="<%=basePath%>">
  
- <title>编程攻略</title>
+ <title>编程大典</title>
   <script>
  var browser =navigator.userAgent;
   //是IE浏览器，就跳转页面
@@ -284,9 +284,12 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
      	 data.id=id;
      	 var oThis=$(this);
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-     		//editor.txt.html(msg);
+     		$("div[id=databox]").css('background-image', '');
+     		editor.txt.html(msg);
+     		oThis.parents("div[name=divItem]").siblings().slideUp();
+				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      			//第一次点击目录,回收目录页
-     		if(isMove==true){
+     		/* if(isMove==true){
      			$("#menubox").animate({width:300},1000);
  				$("#message").animate({width:$(document).width()-300-$("#vhandle").width()},1000);
  				 window.setTimeout(function(){
@@ -298,7 +301,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      		}else{
      			editor.txt.html(msg);
-     		}
+     		} */
      	 });
      });
      /*end:点击菜单获取数据*/
@@ -565,15 +568,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
  <script>
  	$(function(){
  		 //当浏览器大小被拉伸时,重新执行vresize方法
- 		 var vresize=function(){
- 				var height=$(document).height();
- 		 		$("#container").css("height",height);
- 		 		$("#vhandle").css("height",height);
- 		 		$("#category").css("height",(height-35-100-20));
- 		 		$("#message").css("height",height);
- 		 };
- 		vresize();
- 		$(window).resize(vresize);
+	 		$("#vhandle,#message").css("height",$(document).height());
+	 		$("#category").css("height",($(document).height()-35-100-20));
+	 		//窗口最大/小化之后,该方法会调用
+ 		 $(window).resize(function(e){
+			$("#vhandle,#message").css("height",$(document).height());
+	 		$("#category").css("height",($(document).height()-35-100-20));
+ 		});
  		 //左右拖拉效果
  		 var vhandle=document.getElementById("vhandle");
  		 vhandle.onmousedown=function (e) {
@@ -616,13 +617,13 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <body  style="padding: 0; margin: 0;">
 
-<div id="container" style="width: 100%;height: 100%;">
+<div id="container" style="width: 100%;height: auto;">
  <div style="width: 100%;height: auto;">
-	<div name="menubox" id="menubox" style="width: 60%;float: left;">
+	<div name="menubox" id="menubox" style="width: 40%;float: left;">
 		<div style="text-overflow:ellipsis;overflow:hidden;white-space:nowrap;width: 100%;height: 100px;background-color: #1b3749;font-weight: bold;font-size: 45px;text-align: center;color: white;line-height: 100px;cursor: pointer;" onclick="location.href='/';">编程大典</div>
 		<!-- begin:menu -->
 		<input  type="button" name="showindex" style="height: 20px;font-weight: bold;color:white;cursor: pointer;width:100%;border:1px solid grey;text-align: center;background-color: #1b3749;line-height: 20px;"  onmouseover="this.style.cursor='pointer'"></input>
-	  	<div style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom: 1px solid grey; " id="category" name="category">
+	  	<div  id="category" name="category" style="width: 100%;background-color: #1b3749;overflow-x:hidden;overflow-y:auto; height: 0px;border-left: 1px solid grey;border-bottom: 1px solid grey; ">
 		    <div id="mainItem" style="height: 20px;font-weight: bold;color:white;cursor: pointer;"  onmouseover="this.style.cursor='pointer'">目录索引结构树</div>
 		    <c:forEach items="${itembox}" var="item">
 		     <div box-id="${item.id }"  name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
@@ -637,25 +638,23 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 	 	</div>
 	 	<!-- end:menu -->
 	 	<!-- begin:save -->
-	 	<div>
 	 		<div  style="width: 100%;height: 35px;background-color: #1b3749;color: white;font-weight: bold;float: left;line-height: 35px;text-align: center;border-left: 1px solid grey;" >
 	 			<form action="/login.jhtml"  method="post">
-	 				<input type="hidden" name="username" value="">
-	 				<input type="hidden" name="password" value="">
+	 				<input type="hidden" name="username" value="#">
+	 				<input type="hidden" name="password" value="#">
 	 				<input id="time" style="color:white;font-weight: lighter; border: none;background-color: #1b3749" type="submit"  value="@作者微信:15295432682"></form> 
 	 		</div>
-	 	</div>
 	 	<!-- end:save -->
 	</div>
  	<div  id="vhandle" style="float: left;width: 0.5%;background-color: #ccc;height: 10px;cursor: e-resize;"></div>
- 	<div id="message" style="float: left;width: 39.5%;height: 0px;">
+ 	<div id="message" style="float: left;width: 59.5%;height: auto;">
 		<div id="downbox"  style="width: 100%;overflow-x:hidden;height: 0px;overflow-x:hidden;">
 			<div id="downMenu" style="width: 100%;height: 30px;"></div>
 			<div id="downEd" style="width: 100%;height: 300px;"></div>
 		</div>
 		<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
-			 <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div>
-		 	<div id="databox" style="height: 0px;overflow-x:hidden;width: 100%;height: 95.5%; background-image: url('static/images/start.jpg');">
+			<shiro:authenticated>  <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div></shiro:authenticated>
+		 	<div id="databox" style="overflow-x:hidden;width: 100%; background-image: url('static/images/start.jpg');height:95.5%;">
 					<div id="editor" style="width: 100%;height: 100%;"></div>
 			</div>
  	</div>
