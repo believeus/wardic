@@ -9,6 +9,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <!DOCTYPE html>
 <head>
+<meta name="baidu-site-verification" content="lkkTUJ7jTU" />
  <link rel="shortcut icon" href="/favicon.ico">
  <base href="<%=basePath%>">
  
