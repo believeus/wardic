@@ -13,6 +13,7 @@ import mydfs.storage.server.MydfsTrackerServer;
 
 import org.apache.shiro.SecurityUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -64,7 +65,14 @@ public class IndexController {
 	public String findData(int id) {
 		Tdata data = ((Titem) service.findObject(Titem.class, id)).getDatabox();
 		return data.getContent();
-
+	}
+	@RequestMapping("ilove{id}")
+	public ModelAndView store(@PathVariable(value="id") int id){
+		ModelAndView modelView=new ModelAndView();
+		Tdata data = ((Titem) service.findObject(Titem.class, id)).getDatabox();
+		modelView.addObject("data", data.getContent());
+		modelView.setViewName("/WEB-INF/ipage.jsp");
+		return modelView;
 	}
 
 	@RequestMapping("/upload")
