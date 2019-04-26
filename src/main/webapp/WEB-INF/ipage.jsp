@@ -29,7 +29,6 @@
 </head>
 
 <body style="padding: 0px;margin: 0px">
-	<div style="background-color: #1b3749;width: 100%;height: 60px;font-size: 32px;line-height: 60px;text-align: center;"><a style="font-weight: bold;color: white;text-decoration: none;" href="http://www.itstorage.cn/">编程大典</a></div>
 	<div style="height: 100%;width: 100%;background-color:white;">
 		<shiro:authenticated> <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div></shiro:authenticated>
 		<div id="editor" style="width: 100%;height: 100%;"></div>
