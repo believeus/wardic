@@ -66,11 +66,10 @@ public class IndexController {
 		Tdata data = ((Titem) service.findObject(Titem.class, id)).getDatabox();
 		return data.getContent();
 	}
-	@RequestMapping("ilove{id}")
+	@RequestMapping("/article/{id}")
 	public ModelAndView store(@PathVariable(value="id") int id){
 		ModelAndView modelView=new ModelAndView();
-		Tdata data = ((Titem) service.findObject(Titem.class, id)).getDatabox();
-		modelView.addObject("data", data.getContent());
+		modelView.addObject("id",id);
 		modelView.setViewName("/WEB-INF/ipage.jsp");
 		return modelView;
 	}

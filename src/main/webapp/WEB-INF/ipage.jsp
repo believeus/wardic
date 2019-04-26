@@ -18,8 +18,12 @@
 	$(function() {
 		var editor = new window.wangEditor("#menu","#editor");
 		editor.create();
-		editor.$textElem.attr('contenteditable', false);//默认关闭编辑器
-		editor.txt.html("${data}");
+		editor.$textElem.attr('contenteditable', false);
+		 var data={};
+     	 data.id=${id};
+		 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+	     		editor.txt.html(msg);
+		 });
 	});
 </script>
 </head>
@@ -27,7 +31,7 @@
 <body style="padding: 0px;margin: 0px">
 	<div style="height: 100%;width: 100%">
 		<shiro:authenticated> <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div></shiro:authenticated>
-		<div id="editor" style="width: 100%;height: 100%;border:1px solid grey;"></div>
+		<div id="editor" style="width: 100%;height: 100%;"></div>
 	</div>
 </body>
 </html>
