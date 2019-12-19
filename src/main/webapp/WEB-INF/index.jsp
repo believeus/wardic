@@ -28,66 +28,60 @@
 <script>
 
  $(function() {
-	 CKEDITOR.replace( 'editor',{
-		      										extraPlugins: 'imagepaste,uploadimage,image2',
-		      										height: 300,
-		      										uploadUrl:'upload.jhtml?type=Files&name=myFileName&responseType=json'
-	      										}
-	 										)
-	  CKEDITOR.replace( 'content')
+		
 	 <shiro:hasPermission name="user:save"> 
 	 //使用ctrl+s保存文章
 	 $(document).keydown(function(e){
 		   if( e.ctrlKey  == true && e.keyCode == 83 ){
 			   var item={};
 			    item.itemId=$("div[click=on]").attr("id");
-			    item.content=JMEditor.html('content')
+			    item.content=CKEDITOR.instances.editor.getData();
 	 			$.post("<%=basePath%>saveData.jhtml",item);
 		      return false; // 截取返回false就不会保存网页了
 		   }
 		});
 	 </shiro:hasPermission>
-	//隐藏浏览器滚动条
-	 document.body.parentNode.style.overflowY = "hidden"; 
-     //禁用鼠标右键
-     $('body').on("contextmenu", function() {
-         return false;
-     }).click(function() {
-         $("div[name=menu]").hide();
-     });
 	
-     <shiro:hasPermission name="user:editMenu"> 
-     /*Begin:双击进入编辑模式*/
-     $("body").on("dblclick","div[name=subChild]",function(){
-         if($(this).attr("contenteditable")=="false"){
-        	$(this).attr("contenteditable", true);
-         	$(this).css("border","1px solid grey");
-         	$(this).css("background-color", "white");
-          	$(this).css("color", "#1b3749");
-         }
-         //关闭编辑器编辑模式
-         $("#content").attr('contenteditable', false);
-     });
-     /*end:双击进入编辑模式*/
-     /*begin:敲enter键,将修改的代码保存到服务器中*/
-      $("body").on("keydown","div[name=subChild]",function(event){
-    	  //非编辑状态enter键无效
-    	  if($(this).attr("contenteditable")=="false"){return;}
-    	  if(event.which == "13"){ //enter键的键值为13
-    		$(this).attr("contenteditable", false),
-           	$(this).css("background-color", "#1b3749"),
-           	$(this).css("color", "white"),
-           	$(this).css("border","none");
-            var item={};
-            item.title=$(this).text().trim();
-            item.pid=$(this).attr("pid");//父id
-            item.oid=$(this).attr("oid");//排序id
-            if($(this).attr("id")!=undefined){//新添加的菜单是没有id属性的,js的if语句可以判断undefind
-               item.id=$(this).attr("id");
-            }
-            var oThis=$(this);
-            /*Begin:将修改的目录保存到数据库*/
-            $.post("<%=basePath%>save.jhtml",item,function(message){
+		//隐藏浏览器滚动条
+		document.body.parentNode.style.overflowY = "hidden";
+		//禁用鼠标右键
+		$('body').on("contextmenu", function() {
+			return false;
+		}).click(function() {
+			$("div[name=menu]").hide();
+		});
+
+		<shiro:hasPermission name="user:editMenu">
+		/*Begin:双击进入编辑模式*/
+		$("body").on("dblclick", "div[name=subChild]", function() {
+			if ($(this).attr("contenteditable") == "false") {
+				$(this).attr("contenteditable", true);
+				$(this).css("border", "1px solid grey");
+				$(this).css("background-color", "white");
+				$(this).css("color", "#1b3749");
+			}
+			//关闭编辑器编辑模式
+			$("#content").attr('contenteditable', false);
+		});
+		/*end:双击进入编辑模式*/
+		/*begin:敲enter键,将修改的代码保存到服务器中*/
+		$("body").on("keydown", "div[name=subChild]", function(event) {
+			//非编辑状态enter键无效
+			if ($(this).attr("contenteditable") == "false") {
+				return;
+			}
+			if (event.which == "13") { //enter键的键值为13
+				$(this).attr("contenteditable", false), $(this).css("background-color", "#1b3749"), $(this).css("color", "white"), $(this).css("border", "none");
+				var item = {};
+				item.title = $(this).text().trim();
+				item.pid = $(this).attr("pid");//父id
+				item.oid = $(this).attr("oid");//排序id
+				if ($(this).attr("id") != undefined) {//新添加的菜单是没有id属性的,js的if语句可以判断undefind
+					item.id = $(this).attr("id");
+				}
+				var oThis = $(this);
+				/*Begin:将修改的目录保存到数据库*/
+				$.post("<%=basePath%>save.jhtml",item,function(message){
                 var msg=message.split(":");
                 var rdate=msg[0];
                 var id=msg[1];
@@ -137,7 +131,6 @@
                                    //其项以下的兄弟节点oid全部-1
                                    $.post("<%=basePath%>del.jhtml",data,function(message){
                                        oThis.nextAll().each(function(){
-                                    	   console.info($(this));
                                            var i=parseInt($(this).attr("oid"))-1;
                                            $(this).attr("oid",i);
                                            var item={};
@@ -241,7 +234,6 @@
   			 var item={};
       		 item.id=$(this).attr("id");
       		 var oThis=$(this);
-      		 console.info(oThis);
       		
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
       			 var data = $.parseJSON(data);
@@ -267,6 +259,8 @@
 		</shiro:authenticated> 
      	 $("div[name=subChild]").css("color","#ccc").removeAttr("click");
      	 $(this).css("background-color","#1b3749").attr("click","on");
+     	 $("div[id=backimg]").css("display","none")
+     	 $("div[id=databox]").css("display","block")
      	 $(this).css("color","white");
      	 var id=$(this).attr("id");
      	 var data={};
@@ -274,7 +268,7 @@
      	 var oThis=$(this);
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
      		$("div[id=databox]").css('background-image', '');
-     		JMEditor.ckEditor.instances.content.setData(msg)
+     		CKEDITOR.instances.editor.setData(msg)
      		oThis.parents("div[name=divItem]").siblings().slideUp();
 				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      			//第一次点击目录,回收目录页
@@ -442,8 +436,6 @@
                            	  	var otherOid=otherDiv.attr("oid");
                            	  	otherDiv.attr("oid",thisOid);
                            	  	thisDiv.attr("oid",otherOid);
-                           	  	console.info(thisDiv);
-                           	  	console.info(thisDiv.next());
                          	   var div=thisDiv.clone();
                            	   var subChildDiv=thisDiv.next().clone();
                            	 	thisDiv.next().remove();
@@ -529,8 +521,6 @@
                 	  
                 	  var thisId=$(thisItem).attr("id");
                 	  var otherId=$(otherItem).attr("id");
-                	  console.info(thisId);
-                	  console.info(otherId);
                  	  //将数据传送到服务端
                       var item={};
                       item.data=thisId+":"+otherId;
@@ -638,9 +628,9 @@
 					<div id="downEd" style="width: 100%;height: 300px;"></div>
 				</div>
 				<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
-				<div id="databox" style="overflow-x:hidden;width: 100%; height:95.5%; background-image: url('static/images/start.jpg')">
-					<textarea style="width: 100%;height: 100%;" name="editor" id="editor" /></textarea>
-					<textarea style="width: 100%;height: 100%;" name="content" id="content" /></textarea>
+				<div id="backimg" style="overflow-x:hidden;width: 100%; height:100%;display:block; background-image: url('static/images/freedom.jpg')"></div>
+				<div id="databox" style="overflow-x:hidden;width: 100%; height:100%; background-image: url('static/images/freedom.jpg');display: none;">
+					<textarea style="width: 100%;height: 100%;"  name="editor" id="editor" /></textarea>
 				</div>
 			</div>
 		</div>
@@ -648,10 +638,18 @@
 
 </body>
 <script>
+CKEDITOR.replace('editor', {
+	<shiro:guest>
+	readOnly : true,
+	</shiro:guest>
+	extraPlugins : 'imagepaste,uploadimage,image2,mathjax',
+	height : 500,
+	mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+	uploadUrl : 'upload.jhtml'
+})
 <shiro:authenticated> 
 	window.setInterval(function(){
-			$.post("<%=basePath%>
-	gettime.jhtml", function(msg) {
+			$.post("<%=basePath%>gettime.jhtml", function(msg) {
 			$("#time").val(msg);
 		});
 	}, 1000);
