@@ -10,7 +10,7 @@
 		<property name="host" value="127.0.0.1"/>
 		<property name="port" value="9999"/>
 		<property name="workers" value="10"/>
-		<property name="basepath" value="/data/store/image/"/>
+		<property name="basepath" value="d:/data/store/image/"/>
 	</bean>
 	<bean id="mydfsTrackerServer" class="mydfs.storage.server.MydfsTrackerServer" scope="prototype">
 		<property name="host" value="127.0.0.1"/>

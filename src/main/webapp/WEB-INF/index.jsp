@@ -24,10 +24,17 @@
   }
 </script>
 <script src="static/js/jquery-3.3.1.min.js"></script>
-<script type="text/javascript" src="static/editor/jmeditor/JMEditor.js"></script>
+<script type="text/javascript" src="static/ckeditor/ckeditor.js"></script>
 <script>
 
  $(function() {
+	 CKEDITOR.replace( 'editor',{
+		      										extraPlugins: 'imagepaste,uploadimage,image2',
+		      										height: 300,
+		      										uploadUrl:'upload.jhtml?type=Files&name=myFileName&responseType=json'
+	      										}
+	 										)
+	  CKEDITOR.replace( 'content')
 	 <shiro:hasPermission name="user:save"> 
 	 //使用ctrl+s保存文章
 	 $(document).keydown(function(e){
@@ -631,9 +638,9 @@
 					<div id="downEd" style="width: 100%;height: 300px;"></div>
 				</div>
 				<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
-				<%-- 	<shiro:authenticated>  <div id="menu" style="width: 100%;border:1px solid grey;height: 4%; "></div></shiro:authenticated> --%>
 				<div id="databox" style="overflow-x:hidden;width: 100%; height:95.5%; background-image: url('static/images/start.jpg')">
-					<div id="content" contentEditable="true" style="width: 100%;height: 100%;" class="ckeditor"></div>
+					<textarea style="width: 100%;height: 100%;" name="editor" id="editor" /></textarea>
+					<textarea style="width: 100%;height: 100%;" name="content" id="content" /></textarea>
 				</div>
 			</div>
 		</div>
@@ -643,8 +650,9 @@
 <script>
 <shiro:authenticated> 
 	window.setInterval(function(){
-			$.post("<%=basePath%>gettime.jhtml", function(msg) {
-				$("#time").val(msg);
+			$.post("<%=basePath%>
+	gettime.jhtml", function(msg) {
+			$("#time").val(msg);
 		});
 	}, 1000);
 	</shiro:authenticated>
