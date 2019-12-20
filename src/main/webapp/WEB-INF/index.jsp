@@ -646,7 +646,7 @@
 		<shiro:notAuthenticated> 
 		readOnly : true,
 		</shiro:notAuthenticated> 
-		extraPlugins : 'imagepaste,uploadimage,image2,mathjax,pastefromexcel',
+		extraPlugins : 'imagepaste,uploadimage,image2,mathjax',
 		height : 600,
 		mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
 		uploadUrl : 'upload.jhtml',

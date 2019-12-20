@@ -13,16 +13,22 @@
 
 <title>编程大典</title>
 <script src="static/js/jquery-3.3.1.min.js"></script>
-<script src="static/editor/wangEditor.js"></script>
+<script type="text/javascript" src="static/ckeditor/ckeditor.js"></script>
 <script>
 	$(function() {
-		var editor = new window.wangEditor("#menu","#editor");
-		editor.create();
-		editor.$textElem.attr('contenteditable', false);
+		CKEDITOR.replace('editor', {
+			<shiro:notAuthenticated> 
+			readOnly : true,
+			</shiro:notAuthenticated> 
+			extraPlugins : 'imagepaste,uploadimage,image2,mathjax',
+			height : 600,
+			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+			uploadUrl : 'upload.jhtml',
+		})
 		 var data={};
      	 data.id=${id};
 		 $.post("<%=basePath%>findData.jhtml",data,function(msg){
-	     		editor.txt.html(msg);
+			 CKEDITOR.instances.editor.setData(msg)
 		 });
 	});
 </script>
