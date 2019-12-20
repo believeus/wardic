@@ -28,20 +28,19 @@
 <script>
 
  $(function() {
-	 <shiro:authenticated> 
+		
+	 <shiro:hasPermission name="user:save"> 
 	 //使用ctrl+s保存文章
 	 $(document).keydown(function(e){
 		   if( e.ctrlKey  == true && e.keyCode == 83 ){
 			   var item={};
 			    item.itemId=$("div[click=on]").attr("id");
-			    if(item.itemId){
-			    	 item.content=CKEDITOR.instances.editor.getData();
-			 			$.post("<%=basePath%>saveData.jhtml",item);
-			    }
+			    item.content=CKEDITOR.instances.editor.getData();
+	 			$.post("<%=basePath%>saveData.jhtml",item);
 		      return false; // 截取返回false就不会保存网页了
 		   }
 		});
-	 </shiro:authenticated> 
+	 </shiro:hasPermission>
 	
 		//隐藏浏览器滚动条
 		document.body.parentNode.style.overflowY = "hidden";
@@ -52,7 +51,7 @@
 			$("div[name=menu]").hide();
 		});
 
-		<shiro:authenticated> 
+		<shiro:hasPermission name="user:editMenu">
 		/*Begin:双击进入编辑模式*/
 		$("body").on("dblclick", "div[name=subChild]", function() {
 			if ($(this).attr("contenteditable") == "false") {
@@ -162,7 +161,7 @@
       	});
       });
      /*End:给subChild添加菜单*/
-	</shiro:authenticated> 
+	  </shiro:hasPermission>
        $("body").on("click","input[name=showindex]",function(){
     	 if($(this).attr("menu")=="all"){
     		 $("div[click=on]").parents("div[name=divItem]").siblings().slideDown().find("div[name=item]").slideUp();
@@ -174,7 +173,7 @@
     		 $("div[click=on]").parents("div[name=divItem]").siblings().slideUp();
     	 };
      });
-       <shiro:authenticated> 
+     <shiro:hasPermission name="user:editMenu"> 
      $("div[id=mainItem]").dblclick(function(){
     	 //获取最后一个兄弟节点
     	 var oid=$(this).parent().children("div:last-child").find("div[name=indexItem]").attr("oid");
@@ -188,7 +187,7 @@
              "</div>";
          $(this).parent().append(div);
      });
-     </shiro:authenticated> 
+     </shiro:hasPermission>
      
      /*Begin:点击第一父节点会展开或收缩*/
      $("body").on("click","div[name=indexItem]",function(e){
@@ -260,9 +259,9 @@
 		</shiro:authenticated> 
      	 $("div[name=subChild]").css("color","#ccc").removeAttr("click");
      	 $(this).css("background-color","#1b3749").attr("click","on");
-     	 $("div[id=backimg]").css("display","none");
-     	 $("div[id=statusbar]").css("display","block")
-     	 $("div[id=databox]").css("background-image","url'(static/images/freedom.jpg')").css("display","block");
+     	 $("div[id=backimg]").css("display","none")
+     	 $("div[id=databox]").css("display","block")
+     	  $("div[id=statusbar]").css("display","block")
      	 $(this).css("color","white");
      	 var id=$(this).attr("id");
      	 var data={};
@@ -290,7 +289,7 @@
      	 });
      });
      /*end:点击菜单获取数据*/
-      <shiro:authenticated> 
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:按enter键保存数据*/
      $("body").on("keydown","div[name=indexItem]",function(event){
     	//非编辑状态enter键无效
@@ -328,8 +327,8 @@
     	}
      });
      /*End:按enter键保存数据*/
-      </shiro:authenticated> 
-      <shiro:authenticated> 
+      </shiro:hasPermission>
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:给div[name=subItem]添加keydown事件*/
      $("body").on("keydown","div[name=subItem]",function(event){
     	//非编辑状态enter键无效
@@ -368,9 +367,9 @@
      	}
      });
      /*End:给div[name=subItem]添加keydown事件*/
-      </shiro:authenticated> 
+      </shiro:hasPermission>
       
-      <shiro:authenticated> 
+      <shiro:hasPermission name="user:editMenu">
      /*Begin:双击进入编辑模式*/
       $("body").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
     	  var isEdit=$(this).attr("contenteditable");
@@ -382,8 +381,8 @@
           }
       });
       /*End:双击进入编辑模式*/
-       </shiro:authenticated> 
-       <shiro:authenticated> 
+       </shiro:hasPermission>
+       <shiro:hasPermission name="user:editMenu">
       /*Begin:给subItem添加右键菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=subItem]",function(e){
     	  $("div[name=menu]").remove();//把原来的右键菜单删除
@@ -472,8 +471,8 @@
     	  
       });
       /*End:给subItem添加右键菜单*/
-      </shiro:authenticated> 
-      <shiro:authenticated> 
+      </shiro:hasPermission>
+      <shiro:hasPermission name="user:editMenu">
       /*Begin:给indexItem添加右键菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=indexItem]",function(e){
     	  if($(this).attr("contenteditable")=="true"){return;}
@@ -542,7 +541,7 @@
           /*End:给indexItem添加右键菜单*/
     	  
       });
-      </shiro:authenticated> 
+      </shiro:hasPermission>
     });
  </script>
 <!-- 设置导航的高度 -->
@@ -630,39 +629,46 @@
 					<div id="downEd" style="width: 100%;height: 300px;"></div>
 				</div>
 				<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
-				<div id="statusbar" style="width:100%;height: 30px;background-color: #eeeeee;display: none;text-align: center;line-height: 30px;color: grey">提示：文档会自动保存</div>
+				<div id="statusbar" style="width:100%;height: 30px;background-color: #eeeeee;display: none;text-align: center;line-height: 30px;">
+					<a id="messtatus"  <shiro:authenticated> href="logout.jhtml" </shiro:authenticated> style="text-decoration: none;color:grey ">
+							<shiro:authenticated>提示：文档处于编辑状态</shiro:authenticated>
+							<shiro:notAuthenticated>提示：文档处于不可编辑状态</shiro:notAuthenticated>
+					</a>
+				</div>
 				<div id="backimg" style="overflow-x:hidden;width: 100%; height:100%;display:block; background-image: url('static/images/freedom.jpg')"></div>
-				<div id="databox" style="overflow-x:hidden;width: 100%; height:100%; display: none;">
+				<div id="databox" style="overflow-x:hidden;width: 100%; height:100%; background-image: url('static/images/freedom.jpg');display: none;">
 					<textarea style="width: 100%;height: 100%;" name="editor" id="editor" /></textarea>
 				</div>
-				
 			</div>
 		</div>
 	</div>
 
 </body>
 <script>
-	CKEDITOR.replace('editor', {
-		<shiro:notAuthenticated> 
-		readOnly : true,
-		</shiro:notAuthenticated> 
-		extraPlugins : 'imagepaste,uploadimage,image2,mathjax',
-		height : 600,
-		mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
-		uploadUrl : 'upload.jhtml',
-	})
+CKEDITOR.replace('editor', {
+	<shiro:guest>
+	readOnly : true,
+	</shiro:guest>
+	//extraPlugins : 'image2,mathjax', //base64直接保存图片
+	extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
+	uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
+	height : 650,
+	mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML'
 	
-	CKEDITOR.instances.editor.on('key', function(event) { 
-      	window.savecontent=true
-      	$("#statusbar").text("编辑中……")
-	}); 
-	
+})
 <shiro:authenticated> 
 	window.setInterval(function(){
 			$.post("<%=basePath%>gettime.jhtml", function(msg) {
 			$("#time").val(msg);
 		});
 	}, 1000);
+	</shiro:authenticated>
+	
+	<shiro:hasPermission name="user:save"> 
+	CKEDITOR.instances.editor.on('key', function(event) { 
+      	window.savecontent=true
+      	$("#messtatus").text("编辑中……")
+	}); 
 	//每隔十秒自动保存
 	window.setInterval(function(){
 		  if(!window.savecontent) return;
@@ -670,13 +676,13 @@
 		    item.itemId=$("div[click=on]").attr("id");
 		    if(item.itemId){
 		    	 item.content=CKEDITOR.instances.editor.getData();
-		    	 $("#statusbar").text("保存中……")
+		    	 $("#messtatus").text("保存中……")
 		 			$.post("<%=basePath%>saveData.jhtml",item,function(){
 		 				window.savecontent=false
-		 				$("#statusbar").text("已保存")
+		 				$("#messtatus").text("已保存")
 		 			});
 		    }
 	},3000)
-	</shiro:authenticated>
+	</shiro:hasPermission> 
 </script>
 </html>
