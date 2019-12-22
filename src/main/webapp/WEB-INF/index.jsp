@@ -650,10 +650,10 @@ CKEDITOR.replace('editor', {
 	readOnly : true,
 	</shiro:guest>
 	//extraPlugins : 'image2,mathjax', //base64直接保存图片
-	extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
+	extraPlugins : 'imagepaste,uploadimage,mathjax,openlink', //将图片上传到图片服务器
 	uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
 	height : 650,
-	mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML'
+	mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
 	
 })
 <shiro:authenticated> 
