@@ -28,6 +28,16 @@
 <script>
 
  $(function() {
+	 var editor =CKEDITOR.replace('editor', {
+			readOnly : true,
+			height : $(document).height()-100,
+			//extraPlugins : 'image2,mathjax', //base64直接保存图片
+			<shiro:authenticated> 
+			extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
+			uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
+			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+			</shiro:authenticated> 
+		})
 		
 	 <shiro:hasPermission name="user:save"> 
 	 //使用ctrl+s保存文章
@@ -249,7 +259,7 @@
      /*Begin:点击菜单获取数据*/
      var isMove=true;
      $("body").on("click","div[name=subChild]",function(){
-    	
+    	 editor.execCommand("maximize");
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -645,17 +655,7 @@
 
 </body>
 <script>
-CKEDITOR.replace('editor', {
-	<shiro:guest>
-	readOnly : true,
-	</shiro:guest>
-	//extraPlugins : 'image2,mathjax', //base64直接保存图片
-	extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
-	uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
-	height : 650,
-	mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
-	
-})
+
 <shiro:authenticated> 
 	window.setInterval(function(){
 			$.post("<%=basePath%>gettime.jhtml", function(msg) {
@@ -685,4 +685,5 @@ CKEDITOR.replace('editor', {
 	},3000)
 	</shiro:hasPermission> 
 </script>
+
 </html>
