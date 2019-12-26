@@ -29,7 +29,12 @@
 
  $(function() {
 	 var editor =CKEDITOR.replace('editor', {
-			readOnly : true,
+		 <shiro:hasPermission name="user:save"> 
+			readOnly : false,
+			</shiro:hasPermission> 
+		 <shiro:guest>
+		 readOnly : true,
+		 </shiro:guest>
 			height : $(document).height()-100,
 			//extraPlugins : 'image2,mathjax', //base64直接保存图片
 			<shiro:authenticated> 
@@ -40,6 +45,10 @@
 		})
 		
 	 <shiro:hasPermission name="user:save"> 
+		CKEDITOR.instances.editor.on('key', function(event) { 
+	      	window.savecontent=true
+	      	$("#messtatus").text("编辑中……")
+		}); 
 	 //使用ctrl+s保存文章
 	 $(document).keydown(function(e){
 		   if( e.ctrlKey  == true && e.keyCode == 83 ){
@@ -259,7 +268,6 @@
      /*Begin:点击菜单获取数据*/
      var isMove=true;
      $("body").on("click","div[name=subChild]",function(){
-    	 editor.execCommand("maximize");
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
@@ -280,6 +288,10 @@
      	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
      		$("div[id=databox]").css('background-image', '');
      		CKEDITOR.instances.editor.setData(msg)
+     		<shiro:guest>
+     		//编辑器最大化
+     		 editor.execCommand("maximize");
+     		</shiro:guest>
      		oThis.parents("div[name=divItem]").siblings().slideUp();
 				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
      			//第一次点击目录,回收目录页
@@ -640,9 +652,7 @@
 				</div>
 				<div id="hhandle" style="width:100%;height: 0.5%;background-color: #ccc;cursor: n-resize;"></div>
 				<div id="statusbar" style="width:100%;height: 30px;background-color: #eeeeee;display: none;text-align: center;line-height: 30px;">
-					<a id="messtatus"  <shiro:authenticated> href="logout.jhtml" </shiro:authenticated> style="text-decoration: none;color:grey ">
-							<shiro:authenticated>提示：文档处于编辑状态</shiro:authenticated>
-							<shiro:notAuthenticated>提示：文档处于不可编辑状态</shiro:notAuthenticated>
+					<a id="messtatus" <shiro:authenticated> href="logout.jhtml" </shiro:authenticated> style="text-decoration: none;color:grey "> <shiro:authenticated>提示：文档处于编辑状态</shiro:authenticated> <shiro:notAuthenticated>提示：文档处于不可编辑状态</shiro:notAuthenticated>
 					</a>
 				</div>
 				<div id="backimg" style="overflow-x:hidden;width: 100%; height:100%;display:block; background-image: url('static/images/freedom.jpg')"></div>
@@ -665,10 +675,6 @@
 	</shiro:authenticated>
 	
 	<shiro:hasPermission name="user:save"> 
-	CKEDITOR.instances.editor.on('key', function(event) { 
-      	window.savecontent=true
-      	$("#messtatus").text("编辑中……")
-	}); 
 	//每隔十秒自动保存
 	window.setInterval(function(){
 		  if(!window.savecontent) return;
