@@ -37,11 +37,9 @@
 		 </shiro:guest>
 			height : $(document).height()-100,
 			//extraPlugins : 'image2,mathjax', //base64直接保存图片
-			<shiro:authenticated> 
 			extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
 			uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
 			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
-			</shiro:authenticated> 
 		})
 		
 	 <shiro:hasPermission name="user:save"> 
