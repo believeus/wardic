@@ -266,6 +266,9 @@
      /*Begin:点击菜单获取数据*/
      var isMove=true;
      $("body").on("click","div[name=subChild]",function(){
+    		/*begin:2021/1/17 解决当前菜单A还没有加载完公式,点击另一在菜单B时,A页面还停留在当前页加载公式，然后不小心点击键盘任意一个按键，导致菜单B的内容被A内容替代*/
+		$("#content").attr('contenteditable', false);
+		   /*end :2021/1/17 解决当前菜单A还没有加载完公式,点击另一在菜单B时,A页面还停留在当前页加载公式，然后不小心点击键盘任意一个按键，导致菜单B的内容被A内容替代*/
     	 /*begin:编辑状态点击无效*/
     	 if($(this).attr("contenteditable")=="true"){return;}
     	 /*end:编辑状态点击无效*/
