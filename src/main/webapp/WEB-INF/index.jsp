@@ -42,6 +42,14 @@
 			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
 		})
 		
+		window.setInterval(function(){
+				if($.trim("${sessionScope.sessionUser}").length==0){
+			    	 editor.setReadOnly(true)
+			     }
+		}, 1000);
+		
+		  
+		
 	 <shiro:hasPermission name="user:save"> 
 		CKEDITOR.instances.editor.on('key', function(event) { 
 	      	window.savecontent=true
@@ -69,18 +77,7 @@
 		});
 
 		<shiro:hasPermission name="user:editMenu">
-		/*Begin:双击进入编辑模式*/
-		$("body").on("dblclick", "div[name=subChild]", function() {
-			if ($(this).attr("contenteditable") == "false") {
-				$(this).attr("contenteditable", true);
-				$(this).css("border", "1px solid grey");
-				$(this).css("background-color", "white");
-				$(this).css("color", "#1b3749");
-			}
-			//关闭编辑器编辑模式
-			$("#content").attr('contenteditable', false);
-		});
-		/*end:双击进入编辑模式*/
+		
 		/*begin:敲enter键,将修改的代码保存到服务器中*/
 		$("body").on("keydown", "div[name=subChild]", function(event) {
 			//非编辑状态enter键无效
@@ -121,6 +118,7 @@
     	  $("div[name=menu]").remove();//把原来的右键菜单删除
     	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #1b3749;font-size:12px;line-height:25px;color:#1b3749;'>"+
      	 		"<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>"+
+     	 		"<div style='text-align:center;cursor:pointer;'><span name='itemRename'>重新命名</span></div>"+
           		"<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>"+
           	  "</div>";
           	   $(div).appendTo('body');
@@ -154,10 +152,20 @@
                                            item.data=$(this).attr("id")+":"+$(this).attr("oid");
                                            $.post("<%=basePath%>updateOrder.jhtml",item);
                                        });
-                                       oThis.remove();
+                                       oThis.parent().remove();
                                    });
                                   
                                   break;
+                               case  "itemRename":
+                            		if (oThis.attr("contenteditable") == "false") {
+                            			oThis.attr("contenteditable", true);
+                            			oThis.css("border", "1px solid grey");
+                            			oThis.css("background-color", "white");
+                            			oThis.css("color", "#1b3749");
+                        			}
+                        			//关闭编辑器编辑模式
+                        			$("#content").attr('contenteditable', false);
+                         		  break;
                                case "itemMovUp":
                               	 var item={};
                               	 var thisId=oThis.attr("id");
@@ -224,7 +232,7 @@
         		 if(data.length>0){
         			 oThis.attr("hasChild","true");
         			 for(var i=0;i<data.length;i++){
-     			        var div="<div  id="+data[i].id+" pid="+oThis.attr('id')+"  hasChild='false'  oid="+data[i].oid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false' >"+ data[i].title+"</div><div id='subChild'></div>";
+     			        var div="<div oid="+data[i].oid+" id="+data[i].id+" pid="+oThis.attr('id')+" style='clear:both'><div style='float:left'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  id="+data[i].id+" pid="+oThis.attr('id')+"  hasChild='false'  oid="+data[i].oid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false' >"+ data[i].title+"</div><div id='subChild'></div></div>";
      			        obj.append(div);
        			 	} ;
         		}else{
@@ -239,6 +247,8 @@
      /*End:点击第一父节点会展开或收缩*/
 	 /*Begin:展开子目录*/
      $("body").on("click","div[name=subItem]",function(){
+		 var folderstatus=$($(this).prev().children("img")[0]).attr("src")=="static/images/icon-folder-close.png"?"static/images/icon-folder-open.png":"static/images/icon-folder-close.png"
+		 $($(this).prev().children("img[id=folder]")[0]).attr("src",folderstatus)
     	if($(this).attr("hasChild")=="true"){
  			 $($(this).next().children()).each(function(){
      			 if($(this).css("display")=="none"){
@@ -251,12 +261,20 @@
   			 var item={};
       		 item.id=$(this).attr("id");
       		 var oThis=$(this);
-      		
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
       			 var data = $.parseJSON(data);
       			 for(var i=0;i<data.length;i++){
-					var div="<div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div>";
-					oThis.next().append(div);
+      				 switch (data[i].type) {
+					case "folder":
+						var div="<div style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"'><div style='float:left'>&nbsp;&nbsp;<image src='static/images/icon-folder-close.png' width='18px' />&nbsp;</div><div name='subItem'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div><div id='subChild'></div></div>";
+						oThis.next().append(div);
+						break;
+					default:
+						var div="<div style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' ><div style='float:left'>&nbsp;&nbsp;<image src='static/images/icon-file-status.png' width='18px' />&nbsp;</div><div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div></div>";
+						oThis.next().append(div);
+						break;
+					}
+					
       			 }
       			 oThis.attr("hasChild","true");
       		 });
@@ -366,6 +384,7 @@
              data.title=$(this).text().trim();
              data.pid=$(this).attr("pid");
              data.oid=$(this).attr("oid");
+             data.type="folder";
              if($(this).attr("id")!=undefined){
                  data.id=$(this).attr("id");
              }
@@ -392,25 +411,14 @@
      /*End:给div[name=subItem]添加keydown事件*/
       </shiro:hasPermission>
       
-      <shiro:hasPermission name="user:editMenu">
-     /*Begin:双击进入编辑模式*/
-      $("body").on("dblclick","div[name=indexItem],div[name=subItem]",function(e){
-    	  var isEdit=$(this).attr("contenteditable");
-          if(isEdit=="false"){
-        	  $(this).attr("contenteditable", true);
-              $(this).css("border","1px solid grey");
-              $(this).css("color","#1b3749");
-              $(this).css("background-color", "white");
-          }
-      });
-      /*End:双击进入编辑模式*/
-       </shiro:hasPermission>
        <shiro:hasPermission name="user:editMenu">
       /*Begin:给subItem添加右键菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=subItem]",function(e){
     	  $("div[name=menu]").remove();//把原来的右键菜单删除
-    	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #1b3749;font-size:12px;line-height:25px;color:#1b3749;'>"+
-          		"<div style='text-align:center;cursor:pointer;'><span name='itemAddChild'>添加子项</span></div>"+
+    	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #1b3749;font-size:12px;line-height:20px;color:#1b3749;'>"+
+    			"<div style='text-align:center;cursor:pointer;'><span name='itemAddFolder'>添加目录</span></div>"+
+    	  		"<div style='text-align:center;cursor:pointer;'><span name='itemAddChild'>添加文件</span></div>"+
+    	  		"<div style='text-align:center;cursor:pointer;'><span name='itemRename'>重新命名</span></div>"+
           		"<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>"+
           		"<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>"+
           	  "</div>";
@@ -442,12 +450,29 @@
      			    			 "</div>";
                      	oThis.parent().after(div);
                      	break;
-                	 	case "itemAddChild":
-                	 		var divOid=oThis.next().children("div:last-child").attr("oid");
+                	  case "itemAddFolder":
+                		var divOid=oThis.next().children("div:last-child").children("div:last-child").attr("oid");
                 	 		if(divOid!=undefined){
                 	 			divOid++;
                 	 		}else {divOid=0;}
-                	 		var div="<div name='subChild'  oid="+divOid+" pid="+oThis.attr("id")+" style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:60%;cursor:pointer;background-color:white;color:#1b3749;' contenteditable='true'>请输入……</div>";
+         			        var div="<div style='clear:both'><div style='float:left'>&nbsp;&nbsp;<image id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div type='folder'  pid="+oThis.attr('id')+"  hasChild='false'  oid="+divOid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: white; margin-top: 5px; cursor: pointer; color: #1b3749;font-size: 15px;width: 75%;' contenteditable='true' >请输入……</div><div id='subChild'></div></div>";
+                	 		oThis.next().append(div); 
+                 		 break;
+                	  case  "itemRename":
+                		  var isEdit=oThis.attr("contenteditable");
+                          if(isEdit=="false"){
+                        	  oThis.attr("contenteditable", true);
+                        	  oThis.css("border","1px solid grey");
+                        	  oThis.css("color","#1b3749");
+                        	  oThis.css("background-color", "white");
+                          }
+                		  break;
+                	 	case "itemAddChild":
+                	 		var divOid=oThis.next().children("div:last-child").children("div:last-child").attr("oid");
+                	 		if(divOid!=undefined){
+                	 			divOid++;
+                	 		}else {divOid=0;}
+                	 		var div="<div style='float:left'>&nbsp;&nbsp;<img src='static/images/icon-file-status.png' width='18px'/></div><div name='subChild'  oid="+divOid+" pid="+oThis.attr("id")+" style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:5px;font-size:15px;color: #ccc;width:75%;cursor:pointer;background-color:white;color:#1b3749;float:left' contenteditable='true'>请输入……</div>";
                 	 		oThis.next().append(div);
                 	 	break;
                 	 	case "itemMovUp":
@@ -456,16 +481,16 @@
                 	 		 var item={};
                              item.data=thisDiv.attr("id")+":"+otherDiv.attr("id");
                              $.post("<%=basePath%>moveup.jhtml",item,function(msg){
-                           	var thisOid=thisDiv.attr("oid");
+                           		var thisOid=thisDiv.attr("oid");
                            	  	var otherOid=otherDiv.attr("oid");
                            	  	otherDiv.attr("oid",thisOid);
                            	  	thisDiv.attr("oid",otherOid);
-                         	   var div=thisDiv.clone();
-                           	   var subChildDiv=thisDiv.next().clone();
+                         	   	var div=thisDiv.clone();
+                           	   	var subChildDiv=thisDiv.next().clone();
                            	 	thisDiv.next().remove();
                            	 	thisDiv.remove();
-                           	  otherDiv.before(div);
-                           	  otherDiv.before(subChildDiv);
+                           	  	otherDiv.before(div);
+                           	  	otherDiv.before(subChildDiv);
                            	 
                              }); 
                 	 		break;
@@ -474,7 +499,7 @@
                             var data={};
                             data.id=oThis.attr("id");
                             //其项以下的兄弟节点oid全部-1
-                            $.post("<%=basePath%>del.jhtml",data,function(message){
+                       $.post("<%=basePath%>del.jhtml",data,function(message){
                             	oThis.parents().children("div[name=subItem]").each(function(){
                                     var i=parseInt($(this).attr("oid"))-1;
                                     $(this).attr("oid",i);
@@ -482,10 +507,10 @@
                                     item.data=$(this).attr("id")+":"+$(this).attr("oid");
                                     $.post("<%=basePath%>updateOrder.jhtml",item);
                                 });
-                                oThis.next().remove();
-                                oThis.remove();
+                                oThis.parent().next().remove();
+                                oThis.parent().remove();
                                 
-                            });
+                            }); 
                 	 		break;
                 	 }
                 	break;
@@ -502,6 +527,7 @@
           $("div[name=menu]").remove();
           var div="<div name='menu' style='box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;height:80px;font-weight: bold;border:1px solid #1b3749;font-size:14px;line-height:25px;color:#1b3749;'>"+
               		"<div style='text-align:center;cursor: pointer;'><span name='itemAddChild'>添加子项</span></div>"+
+              		"<div style='text-align:center;cursor:pointer;'><span name='itemRename'>重新命名</span></div>"+
               		"<div style='text-align:center;cursor: pointer;'><span name='itemMovUp'>向上移动</span></div>"+
               		"<div style='text-align:center;cursor: pointer;'><span name='itemdel'>删除该项</span></div>"+
               	  "</div>";
@@ -522,13 +548,22 @@
                   //添加子项
                   if($(this).attr("name")=="itemAddChild"){
                       var divOid=0;
-                      var lastDiv=oThis.parent().next().children("div:last-child").prev();
+                      var lastDiv=oThis.parent().next().children("div:last-child");
                       if(lastDiv.length!=0){
                     	  divOid=parseInt(lastDiv.attr("oid"))+1;
                       }
-                      var div="<div  pid='"+oThis.attr("id")+"' haschild='false'  oid='"+divOid+"' name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false'>请输入……</div><div id='subChild'></div>";
+                      var div="<div style='float:left'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  pid='"+oThis.attr("id")+"' haschild='false'  oid='"+divOid+"' name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;font-size: 15px;width: 70%;float:left' contenteditable='false'>请输入……</div><div id='subChild'></div>";
                       oThis.parent().next().append(div);
 
+                  }else  if($(this).attr("name")== "itemRename"){
+		          		if (oThis.attr("contenteditable") == "false") {
+		          			oThis.attr("contenteditable", true);
+		          			oThis.css("border", "1px solid grey");
+		          			oThis.css("background-color", "white");
+		          			oThis.css("color", "#1b3749");
+		      			}
+	      			//关闭编辑器编辑模式
+	      			$("#content").attr('contenteditable', false);
                   }else if($(this).attr("name")=="itemdel"){
                  	 var id=oThis.attr("id");
                  	 var item={};
@@ -629,7 +664,7 @@
 					<c:forEach items="${itembox}" var="item">
 						<div box-id="${item.id }" name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
 							<div style="height: 25px;">
-								<div style="height: 18px;width: 2px;background-color: white;float: left;position: relative;left: 20px;"></div>
+								<div style='float:left;position: relative;left: 25px;top:5px;'><image id="folder" src='static/images/icon-folder-close.png' width='15px' ></image></div>
 								<div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 25px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
 							</div>
 							<div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width: 95%;"></div>
@@ -667,12 +702,12 @@
 </body>
 <script>
 
-<shiro:authenticated> 
-	window.setInterval(function(){
-			$.post("<%=basePath%>gettime.jhtml", function(msg) {
-			$("#time").val(msg);
-		});
-	}, 1000);
+   <shiro:authenticated> 
+		window.setInterval(function(){
+				$.post("<%=basePath%>gettime.jhtml", function(msg) {
+					$("#time").val(msg);
+				});
+		}, 1000);
 	</shiro:authenticated>
 	
 	<shiro:hasPermission name="user:save"> 

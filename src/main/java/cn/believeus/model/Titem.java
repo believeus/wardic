@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,6 +25,7 @@ public class Titem {
 	private int pid;
 	private int oid;// 排序号
 	private Titem parent;
+	private String type;//folder or file
 	private List<Titem> child = new ArrayList<Titem>();
 	private Tdata databox;
 
@@ -33,10 +33,11 @@ public class Titem {
 		
 	}
 
-	public Titem(int id, String title, int oid) {
+	public Titem(int id, String title, int oid,String type) {
 		this.id = id;
 		this.title = title;
 		this.oid = oid;
+		this.type=type;
 	}
 
 	@Id
@@ -102,6 +103,14 @@ public class Titem {
 
 	public void setOid(int oid) {
 		this.oid = oid;
+	}
+
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 }

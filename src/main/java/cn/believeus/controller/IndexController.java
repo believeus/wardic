@@ -1,7 +1,6 @@
 package cn.believeus.controller;
 
 import java.io.InputStream;
-import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -60,7 +59,7 @@ public class IndexController {
 	@RequestMapping("/findItem")
 	@ResponseBody
 	public String findItem(int id) {
-		String hql = "select new Titem(id,title,oid) from Titem where parent.id=" + id + " order by oid asc ";
+		String hql = "select new Titem(id,title,oid,type) from Titem where parent.id=" + id + " order by oid asc ";
 		List<?> itembox = service.findObjectList(hql);
 		return JSONArray.toJSONString(itembox);
 	}
