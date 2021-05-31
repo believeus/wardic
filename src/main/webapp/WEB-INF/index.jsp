@@ -167,18 +167,19 @@
                         			$("#content").attr('contenteditable', false);
                          		  break;
                                case "itemMovUp":
+                            	if(oThis.parent().prev().length==0) return;
                               	 var item={};
                               	 var thisId=oThis.attr("id");
                               	 var thisOid=oThis.attr("oid");
-                              	 var prevId=oThis.prev().attr("id");
-                              	 var prevOid=oThis.prev().attr("oid");
+                              	 var prevId=oThis.parent().prev().attr("id");
+                              	 var prevOid=oThis.parent().prev().attr("oid");
                               	 oThis.attr("oid",prevOid);
-                              	 oThis.prev().attr("oid",thisOid);
+                              	 oThis.parent().prev().attr("oid",thisOid);
                               	 item.data=thisId+":"+prevId;
                               	 $.post("<%=basePath%>moveup.jhtml",item,function(msg){
-                              		var thisDiv=oThis.clone();
-                              		oThis.prev().before(thisDiv);
-                              		oThis.remove();
+                              		var thisDiv=oThis.parent().clone();
+                              		oThis.parent().prev().before(thisDiv);
+                              		oThis.parent().remove();
                                  });
                                  break;
                            };
@@ -218,6 +219,8 @@
      $("body").on("click","div[name=indexItem]",function(e){
     	var oThis=$(this);
     	 var obj=$(this).parent().next();
+		 var folderstatus=$($(this).prev().children("img[id=folder]")[0]).attr("src")=="static/images/icon-folder-close.png"?"static/images/icon-folder-open.png":"static/images/icon-folder-close.png"
+		 $($(this).prev().children("img[id=folder]")[0]).attr("src",folderstatus)
     	if(oThis.attr("hasChild")=="true"){
     		 if(obj.css("display")=="none"){
     			 obj.slideDown(500);
@@ -232,7 +235,7 @@
         		 if(data.length>0){
         			 oThis.attr("hasChild","true");
         			 for(var i=0;i<data.length;i++){
-     			        var div="<div oid="+data[i].oid+" id="+data[i].id+" pid="+oThis.attr('id')+" style='clear:both'><div style='float:left'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  id="+data[i].id+" pid="+oThis.attr('id')+"  hasChild='false'  oid="+data[i].oid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false' >"+ data[i].title+"</div><div id='subChild'></div></div>";
+     			        var div="<div level='1' oid="+data[i].oid+" id="+data[i].id+" pid="+oThis.attr('id')+" style='clear:both'><div style='float:left'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  level='1'  id="+data[i].id+" pid="+oThis.attr('id')+"  hasChild='false'  oid="+data[i].oid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;;font-size: 15px;width: 90%;' contenteditable='false' >"+ data[i].title+"</div><div id='subChild'></div></div>";
      			        obj.append(div);
        			 	} ;
         		}else{
@@ -247,6 +250,7 @@
      /*End:点击第一父节点会展开或收缩*/
 	 /*Begin:展开子目录*/
      $("body").on("click","div[name=subItem]",function(){
+    	 var level=$(this).attr("level");
 		 var folderstatus=$($(this).prev().children("img")[0]).attr("src")=="static/images/icon-folder-close.png"?"static/images/icon-folder-open.png":"static/images/icon-folder-close.png"
 		 $($(this).prev().children("img[id=folder]")[0]).attr("src",folderstatus)
     	if($(this).attr("hasChild")=="true"){
@@ -262,15 +266,18 @@
       		 item.id=$(this).attr("id");
       		 var oThis=$(this);
       		 $.post("<%=basePath%>findItem.jhtml",item,function(data){
+      			level++;
+      			var space=new Array(level).fill("&nbsp;&nbsp;")
+                var width=(75-level*5)+"%"
       			 var data = $.parseJSON(data);
       			 for(var i=0;i<data.length;i++){
       				 switch (data[i].type) {
 					case "folder":
-						var div="<div style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"'><div style='float:left'>&nbsp;&nbsp;<image src='static/images/icon-folder-close.png' width='18px' />&nbsp;</div><div name='subItem'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div><div id='subChild'></div></div>";
+						var div="<div level="+level+" style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"'><div style='float:left'>"+space.join("")+"<img id='folder' src='static/images/icon-folder-close.png' width='18px' />&nbsp;</div><div level="+level+" name='subItem'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:"+width+";cursor:pointer' contenteditable='false'>"+data[i].title+"</div><div id='subChild'></div></div>";
 						oThis.next().append(div);
 						break;
 					default:
-						var div="<div style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' ><div style='float:left'>&nbsp;&nbsp;<image src='static/images/icon-file-status.png' width='18px' />&nbsp;</div><div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:75%;cursor:pointer' contenteditable='false'>"+data[i].title+"</div></div>";
+						var div="<div style='clear:both'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' ><div style='float:left'>"+space.join("")+"<image src='static/images/icon-file-status.png' width='18px' />&nbsp;</div><div name='subChild'  id='"+data[i].id+"' oid='"+data[i].oid+"' pid='"+oThis.attr('id')+"' style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:20px;font-size:15px;color: #ccc;width:"+width+";cursor:pointer' contenteditable='false'>"+data[i].title+"</div></div>";
 						oThis.next().append(div);
 						break;
 					}
@@ -455,7 +462,11 @@
                 	 		if(divOid!=undefined){
                 	 			divOid++;
                 	 		}else {divOid=0;}
-         			        var div="<div style='clear:both'><div style='float:left'>&nbsp;&nbsp;<image id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div type='folder'  pid="+oThis.attr('id')+"  hasChild='false'  oid="+divOid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: white; margin-top: 5px; cursor: pointer; color: #1b3749;font-size: 15px;width: 75%;' contenteditable='true' >请输入……</div><div id='subChild'></div></div>";
+                	 		var level=oThis.attr("level");
+                	 		level++
+                	 		var width=(75-level*5)+"%"
+                 			var space=new Array(level).fill("&nbsp;&nbsp;")
+         			        var div="<div level="+level+" style='clear:both'><div level="+level+" style='float:left'>"+space.join("")+"<image id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div level="+level+" type='folder'  pid="+oThis.attr('id')+"  hasChild='false'  oid="+divOid+" name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: white; margin-top: 5px; cursor: pointer; color: #1b3749;font-size: 15px;width: "+width+";' contenteditable='true' >请输入……</div><div id='subChild'></div></div>";
                 	 		oThis.next().append(div); 
                  		 break;
                 	  case  "itemRename":
@@ -468,16 +479,22 @@
                           }
                 		  break;
                 	 	case "itemAddChild":
-                	 		var divOid=oThis.next().children("div:last-child").children("div:last-child").attr("oid");
+                	 		var divOid=oThis.next().children("div:last-child").attr("oid");
                 	 		if(divOid!=undefined){
                 	 			divOid++;
                 	 		}else {divOid=0;}
-                	 		var div="<div style='float:left'>&nbsp;&nbsp;<img src='static/images/icon-file-status.png' width='18px'/></div><div name='subChild'  oid="+divOid+" pid="+oThis.attr("id")+" style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-top:5px;margin-left:5px;font-size:15px;color: #ccc;width:75%;cursor:pointer;background-color:white;color:#1b3749;float:left' contenteditable='true'>请输入……</div>";
+                	 		var level=oThis.attr("level");
+                	 		level++
+                	 		var width=(75-level*5)+"%"
+                 			var space=new Array(level).fill("&nbsp;&nbsp;")
+                	 		var div="<div oid="+divOid+" pid="+oThis.attr("id")+"  style='clear:both'><div style='float:left'>"+space.join("")+"<img src='static/images/icon-file-status.png' width='18px'/></div><div name='subChild'  oid="+divOid+" pid="+oThis.attr("id")+" style='text-overflow:ellipsis;overflow:hidden;white-space:nowrap;background-color: #1b3749;margin-left:5px;font-size:15px;color: #ccc;width:"+width+";cursor:pointer;background-color:white;color:#1b3749;float:left' contenteditable='true'>请输入……</div></div>";
                 	 		oThis.next().append(div);
                 	 	break;
                 	 	case "itemMovUp":
                 	 		var thisDiv=oThis;
-                	 		var otherDiv=oThis.prev().prev();
+                	 		 console.info(thisDiv)
+                	 		var otherDiv=oThis.parent().prev();
+                	 		console.info(otherDiv)
                 	 		 var item={};
                              item.data=thisDiv.attr("id")+":"+otherDiv.attr("id");
                              $.post("<%=basePath%>moveup.jhtml",item,function(msg){
@@ -485,10 +502,12 @@
                            	  	var otherOid=otherDiv.attr("oid");
                            	  	otherDiv.attr("oid",thisOid);
                            	  	thisDiv.attr("oid",otherOid);
-                         	   	var div=thisDiv.clone();
-                           	   	var subChildDiv=thisDiv.next().clone();
-                           	 	thisDiv.next().remove();
-                           	 	thisDiv.remove();
+                         	   	var div=thisDiv.parent().clone();
+                         	   console.info(div)
+                           	   	var subChildDiv=thisDiv.parent().next().clone();
+                         	  console.info(subChildDiv)
+                           	 	thisDiv.parent().next().remove();
+                           	 	thisDiv.parent().remove();
                            	  	otherDiv.before(div);
                            	  	otherDiv.before(subChildDiv);
                            	 
@@ -552,7 +571,7 @@
                       if(lastDiv.length!=0){
                     	  divOid=parseInt(lastDiv.attr("oid"))+1;
                       }
-                      var div="<div style='float:left'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  pid='"+oThis.attr("id")+"' haschild='false'  oid='"+divOid+"' name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;font-size: 15px;width: 70%;float:left' contenteditable='false'>请输入……</div><div id='subChild'></div>";
+                      var div="<div style='float:left;clear:both'><img id='folder' src='static/images/icon-folder-close.png' width='15px' />&nbsp;</div><div  pid='"+oThis.attr("id")+"' haschild='false'  oid='"+divOid+"' name='subItem'  style='height: 22px;  text-overflow: ellipsis; overflow: hidden; white-space: nowrap; background-color: #1b3749; margin-top: 5px; cursor: pointer; color: white;font-size: 15px;width: 70%;float:left' contenteditable='false'>请输入……</div><div id='subChild'></div>";
                       oThis.parent().next().append(div);
 
                   }else  if($(this).attr("name")== "itemRename"){
@@ -665,7 +684,7 @@
 						<div box-id="${item.id }" name="divItem" style="height: auto;margin-top:5px;float:left;width:275px;">
 							<div style="height: 25px;">
 								<div style='float:left;position: relative;left: 25px;top:5px;'><image id="folder" src='static/images/icon-folder-close.png' width='15px' ></image></div>
-								<div name="indexItem" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 25px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
+								<div name="indexItem" level="0" style="width:70%;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;height: 25px;color:white;float: left;font-weight: bold;line-height: 30px;position: relative;left: 30px;background-color:#1b3749;font-size: 15px;cursor: pointer;" id="${item.id}" oid="${item.oid }" contenteditable="false">${item.title}</div>
 							</div>
 							<div name="item" style="height: auto;color: #999;font-weight: bold;clear: both;position: relative;left: 18%;width: 95%;"></div>
 						</div>
