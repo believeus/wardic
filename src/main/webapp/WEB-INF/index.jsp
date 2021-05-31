@@ -171,13 +171,19 @@
                               	 var item={};
                               	 var thisId=oThis.attr("id");
                               	 var thisOid=oThis.attr("oid");
+                              	 console.info(oThis)
                               	 var prevId=oThis.parent().prev().attr("id");
+                              	 console.info(oThis.parent().prev())
                               	 var prevOid=oThis.parent().prev().attr("oid");
                               	 oThis.attr("oid",prevOid);
+                              	 oThis.parent().attr("oid",prevOid);
                               	 oThis.parent().prev().attr("oid",thisOid);
+                              	 oThis.parent().prev().children("div[name=subItem],div[name=subChild]").attr("oid",thisOid);
                               	 item.data=thisId+":"+prevId;
                               	 $.post("<%=basePath%>moveup.jhtml",item,function(msg){
                               		var thisDiv=oThis.parent().clone();
+                              		console.info(thisDiv)
+                              		console.info(oThis.parent().prev())
                               		oThis.parent().prev().before(thisDiv);
                               		oThis.parent().remove();
                                  });
@@ -492,20 +498,18 @@
                 	 	break;
                 	 	case "itemMovUp":
                 	 		var thisDiv=oThis;
-                	 		 console.info(thisDiv)
                 	 		var otherDiv=oThis.parent().prev();
-                	 		console.info(otherDiv)
                 	 		 var item={};
                              item.data=thisDiv.attr("id")+":"+otherDiv.attr("id");
                              $.post("<%=basePath%>moveup.jhtml",item,function(msg){
                            		var thisOid=thisDiv.attr("oid");
                            	  	var otherOid=otherDiv.attr("oid");
                            	  	otherDiv.attr("oid",thisOid);
+                           	    otherDiv.children("div[name=subItem],div[name=subChild]").attr("oid",thisOid);
                            	  	thisDiv.attr("oid",otherOid);
+                           	    thisDiv.parent().attr("oid",otherOid);
                          	   	var div=thisDiv.parent().clone();
-                         	   console.info(div)
                            	   	var subChildDiv=thisDiv.parent().next().clone();
-                         	  console.info(subChildDiv)
                            	 	thisDiv.parent().next().remove();
                            	 	thisDiv.parent().remove();
                            	  	otherDiv.before(div);
