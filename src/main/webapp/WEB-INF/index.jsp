@@ -42,11 +42,19 @@
 			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
 		})
 		
-		window.setInterval(function(){
-				if($.trim("${sessionScope.sessionUser}").length==0){
-			    	 editor.setReadOnly(true)
-			     }
-		}, 1000);
+	CKEDITOR.replace('refEditor', {
+		 <shiro:hasPermission name="user:save"> 
+			readOnly : false,
+			</shiro:hasPermission> 
+		 <shiro:guest>
+		 readOnly : true,
+		 </shiro:guest>
+			height : $(document).height()-100,
+			//extraPlugins : 'image2,mathjax', //base64直接保存图片
+			extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
+			uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
+			mathJaxLib : 'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_HTML',
+		})
 		
 		  
 		
@@ -114,14 +122,18 @@
       });
      /*Begin:给subChild添加菜单*/
       $("div[name=menubox]").on("contextmenu","div[name=subChild]",function(e){
-    	  if($(this).css("color")!="rgb(255, 255, 255)"){return;};//如果没有被选中,则禁用右键菜单
     	  $("div[name=menu]").remove();//把原来的右键菜单删除
-    	  div="<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #1b3749;font-size:12px;line-height:25px;color:#1b3749;'>"+
-     	 		"<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>"+
-     	 		"<div style='text-align:center;cursor:pointer;'><span name='itemRename'>重新命名</span></div>"+
-          		"<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>"+
-          	  "</div>";
-          	   $(div).appendTo('body');
+    	  let div=[];
+    	  div.push("<div name='menu' style='display:none;box-sizing: border-box;position: absolute;width: 80px;border-radius: 5px;background-color: white;font-weight: bold;border:1px solid #1b3749;font-size:12px;line-height:25px;color:#1b3749;'>");
+    	  if($(this).css("color")!="rgb(255, 255, 255)"){
+    		  div.push("<div style='text-align:center;cursor:pointer;'><span name='itemCheck'>查看该项</span></div>");
+    	  }else{
+    		  div.push("<div style='text-align:center;cursor:pointer;'><span name='itemMovUp'>向上移动</span></div>");
+    		  div.push("<div style='text-align:center;cursor:pointer;'><span name='itemRename'>重新命名</span></div>");
+    		  div.push("<div style='text-align:center;cursor:pointer;'><span name='itemdel'>删除该项</span></div>");
+    	  }
+    	  div.push("</div>");
+          $(div.join("")).appendTo('body');
                var x=e.pageX;
                var y=e.pageY;
                $("div[name=menu]").css("left",x).css("top",y).show();
@@ -139,6 +151,13 @@
                        case "click":
                            var divname=$(e.target).attr("name");
                            switch(divname){
+                           	case  "itemCheck":
+                           	 var data={};
+                             data.id=oThis.attr("id");
+                         	 $.post("<%=basePath%>findData.jhtml",data,function(msg){
+                         		 CKEDITOR.instances.refEditor.setData(msg)
+                         	  })
+                        	   break;
                                case "itemdel":
                                    //删除子项
                                    var data={};
@@ -322,7 +341,7 @@
      		CKEDITOR.instances.editor.setData(msg)
      		<shiro:guest>
      		//编辑器最大化
-     		 editor.execCommand("maximize");
+     		 //editor.execCommand("maximize");
      		</shiro:guest>
      		oThis.parents("div[name=divItem]").siblings().slideUp();
 				$("input[name=showindex]").val("显示[所有]目录").attr("menu","all");
@@ -717,6 +736,7 @@
 				<div id="backimg" style="overflow-x:hidden;width: 100%; height:100%;display:block; background-image: url('static/images/freedom.jpg')"></div>
 				<div id="databox" style="overflow-x:hidden;width: 100%; height:100%; background-image: url('static/images/freedom.jpg');display: none;">
 					<textarea style="width: 100%;height: 100%;" name="editor" id="editor" /></textarea>
+					<textarea style="width: 100%;height: 100%;" name="refEditor" id="refEditor" />右键-->查看该项：</textarea>
 				</div>
 			</div>
 		</div>
