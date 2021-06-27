@@ -28,14 +28,15 @@
 <script>
 
  $(function() {
-	 var editor =CKEDITOR.replace('editor', {
+	 let h=$(document).height()/2.5
+	 CKEDITOR.replace('editor', {
 		 <shiro:hasPermission name="user:save"> 
 			readOnly : false,
 			</shiro:hasPermission> 
 		 <shiro:guest>
 		 readOnly : true,
 		 </shiro:guest>
-			height : $(document).height()-100,
+			height : h,
 			//extraPlugins : 'image2,mathjax', //base64直接保存图片
 			extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
 			uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
@@ -49,7 +50,7 @@
 		 <shiro:guest>
 		 readOnly : true,
 		 </shiro:guest>
-			height : $(document).height()-100,
+			height :h,
 			//extraPlugins : 'image2,mathjax', //base64直接保存图片
 			extraPlugins : 'imagepaste,uploadimage,mathjax', //将图片上传到图片服务器
 			uploadUrl : 'upload.jhtml',//将图片上传到图片服务器url
